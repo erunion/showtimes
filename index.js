@@ -88,25 +88,32 @@ Showtimes.prototype.getTheaters = function (cb) {
         // Some movies don't have a rating, trailer, or IMDb pages, so we need
         // to account for that.
         info = movie.find('.info').text().split(' - ');
-        if (info[1].match(/Rated/)) {
-          rating = info[1].replace(/Rated/, '').trim();
-          if (typeof info[2] != 'undefined') {
-            if (info[2].match(/(IMDB|Trailer)/i)) {
-              genre = false;
+
+        if (info[0].match(/(hr |min)/)) {
+          runtime = info[0].trim();
+          if (info[1].match(/Rated/)) {
+            rating = info[1].replace(/Rated/, '').trim();
+            if (typeof info[2] != 'undefined') {
+              if (info[2].match(/(IMDB|Trailer)/i)) {
+                genre = false;
+              } else {
+                genre = info[2].trim();
+              }
             } else {
-              genre = info[2].trim();
+              genre = false;
             }
           } else {
-            genre = false;
+            rating = false;
+
+            if (info[1].match(/(IMDB|Trailer)/i)) {
+              genre = false;
+            } else {
+              genre = info[1].trim();
+            }
           }
         } else {
           rating = false;
-
-          if (info[1].match(/(IMDB|Trailer)/i)) {
-            genre = false;
-          } else {
-            genre = info[1].trim();
-          }
+          genre = info[0].trim();
         }
 
         imdb = trailer = false;
