@@ -21,7 +21,9 @@
   },
   "homepage": "https://github.com/jonursenbach/showtimes",
   "devDependencies": {
-    "tap": "^0.4.9"
+    "tap": "^0.4.9",
+    "gulp-jshint": "^1.6.2",
+    "gulp": "^3.7.0"
   },
   "dependencies": {
     "cheerio": "^0.16.0",

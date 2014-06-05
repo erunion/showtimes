@@ -15,10 +15,10 @@ function Showtimes(location, options) {
   var reserved = Object.keys(Showtimes.prototype);
   for (var i in options) {
     if (reserved.indexOf(i) === -1) {
-      this[i] = options[i]
+      this[i] = options[i];
     }
   }
-};
+}
 
 /**
  * @param {function} cb - Callback to handle the resulting theaters.
@@ -47,7 +47,7 @@ Showtimes.prototype.getTheaters = function (cb) {
     headers: {
       'User-Agent': self.userAgent
     }
-  }
+  };
 
   request(options, function (error, response, body) {
     if (error || response.statusCode != 200) {
@@ -57,7 +57,7 @@ Showtimes.prototype.getTheaters = function (cb) {
 
     var $ = cheerio.load(body);
 
-    if ($('.theater').length == 0) {
+    if ($('.theater').length === 0) {
       console.log($('#results').text());
       return;
     }
@@ -132,8 +132,8 @@ Showtimes.prototype.getTheaters = function (cb) {
         };
 
         showtimes = movie.find('.times').text().split(' ');
-        for (var i in showtimes) {
-          movieData.showtimes.push(showtimes[i].trim());
+        for (var x in showtimes) {
+          movieData.showtimes.push(showtimes[x].trim());
         }
 
         theaterData.movies.push(movieData);
@@ -143,7 +143,7 @@ Showtimes.prototype.getTheaters = function (cb) {
     });
 
     // No pages to paginate, so return the theaters back.
-    if ($('#navbar td a:contains("Next")').length == 0) {
+    if ($('#navbar td a:contains("Next")').length === 0) {
       cb(theaters);
       return;
     }
