@@ -1,0 +1,30 @@
+{
+  "name": "showtimes",
+  "version": "0.0.0",
+  "description": "movie showtimes api",
+  "main": "index.js",
+  "scripts": {
+    "test": "tap test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jonursenbach/showtimes.git"
+  },
+  "keywords": [
+    "movie",
+    "showtimes"
+  ],
+  "author": "Jon Ursenbach <jon@ursenba.ch>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jonursenbach/showtimes/issues"
+  },
+  "homepage": "https://github.com/jonursenbach/showtimes",
+  "devDependencies": {
+    "tap": "^0.4.9"
+  },
+  "dependencies": {
+    "cheerio": "^0.16.0",
+    "request": "^2.36.0"
+  }
+}
