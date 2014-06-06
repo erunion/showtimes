@@ -1,32 +1,38 @@
 {
   "name": "showtimes",
   "version": "0.0.0",
-  "description": "movie showtimes api",
-  "main": "index.js",
-  "scripts": {
-    "test": "tap test/"
+  "author": {
+    "name": "Jon Ursenbach",
+    "email": "jon@ursenba.ch"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:jonursenbach/showtimes.git"
-  },
+  "description": "Movie showtimes API",
   "keywords": [
     "movie",
     "showtimes"
   ],
-  "author": "Jon Ursenbach <jon@ursenba.ch>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jonursenbach/showtimes/issues"
+  "licenses": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jonursenbach/showtimes.git"
   },
-  "homepage": "https://github.com/jonursenbach/showtimes",
+  "bugs": {
+    "url": "https://github.com/jonursenbach/showtimes/issues",
+    "email": "jon@ursenba.ch"
+  },
+  "dependencies": {
+    "cheerio": "^0.16.0",
+    "request": "^2.36.0"
+  },
   "devDependencies": {
     "tap": "^0.4.9",
     "gulp-jshint": "^1.6.2",
     "gulp": "^3.7.0"
   },
-  "dependencies": {
-    "cheerio": "^0.16.0",
-    "request": "^2.36.0"
+  "main": "index.js",
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "scripts": {
+    "test": "tap test/"
   }
 }
