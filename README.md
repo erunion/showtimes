@@ -1,5 +1,6 @@
 # Showtimes · a movie showtimes API
-![http://img.shields.io/npm/v/showtimes.svg?style=flat](http://img.shields.io/npm/v/showtimes.svg?style=flat) ![http://img.shields.io/travis/jonursenbach/showtimes.svg?style=flat](http://img.shields.io/travis/jonursenbach/showtimes.svg?style=flat)
+[![NPM](http://img.shields.io/npm/v/showtimes.svg?style=flat)](https://www.npmjs.org/package/showtimes)
+[![Travis CI](http://img.shields.io/travis/jonursenbach/showtimes.svg?style=flat)](https://travis-ci.org/jonursenbach/showtimes)
 
 ## Installation
 ```
