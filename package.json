@@ -5,7 +5,7 @@
     "name": "Jon Ursenbach",
     "email": "jon@ursenba.ch"
   },
-  "description": "Movie showtimes API",
+  "description": "a movie showtimes API",
   "keywords": [
     "movie",
     "showtimes"
