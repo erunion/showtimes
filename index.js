@@ -27,14 +27,13 @@ function Showtimes(location, options) {
  * @returns {object}
  */
 Showtimes.prototype.getTheaters = function (cb) {
-  var self = this;
+  var self = this,
+    page = 1,
+    theaters = [];
 
-  page = 1;
   if (arguments.length > 1) {
     page = arguments[1];
     theaters = arguments[2];
-  } else {
-    theaters = [];
   }
 
   var options = {
@@ -65,12 +64,12 @@ Showtimes.prototype.getTheaters = function (cb) {
     $('.theater').each(function (i, theater) {
       theater = $(theater);
 
-      cloaked_url = theater.find('.desc h2.name a').attr('href');
-      theater_id = qs.parse(url.parse(cloaked_url).query).tid;
+      var cloaked_url = theater.find('.desc h2.name a').attr('href');
+      var theater_id = qs.parse(url.parse(cloaked_url).query).tid;
 
-      info = theater.find('.desc .info').text().split(' - ');
+      var info = theater.find('.desc .info').text().split(' - ');
 
-      theaterData = {
+      var theaterData = {
         id: theater_id,
         name: theater.find('.desc h2.name').text(),
         address: info[0].trim(),
@@ -116,7 +115,9 @@ Showtimes.prototype.getTheaters = function (cb) {
           genre = info[0].trim();
         }
 
-        imdb = trailer = false;
+        var imdb = false,
+          trailer = false;
+
         if (movie.find('.info a:contains("Trailer")')) {
           cloaked_url = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href');
           trailer = qs.parse(url.parse(cloaked_url).query).q;
@@ -127,7 +128,7 @@ Showtimes.prototype.getTheaters = function (cb) {
           imdb = qs.parse(url.parse(cloaked_url).query).q;
         }
 
-        movieData = {
+        var movieData = {
           id: movie_id,
           name: movie.find('.name').text(),
           runtime: info[0].trim(),
@@ -142,7 +143,9 @@ Showtimes.prototype.getTheaters = function (cb) {
         // they don't always apply am/pm to times, we need to run through the showtimes in reverse and then apply the
         // previous (later) meridiem to the next (earlier) movie showtime so we end up with something like
         // ["10:00am", "11:20am", "1:00pm", ...].
-        showtimes = movie.find('.times').text().split(' ');
+        var showtimes = movie.find('.times').text().split(' '),
+          meridiem = false;
+
         showtimes = showtimes.reverse();
         for (var x in showtimes) {
           showtime = showtimes[x].trim();
