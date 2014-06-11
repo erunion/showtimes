@@ -50,14 +50,19 @@ Showtimes.prototype.getTheaters = function (cb) {
 
   request(options, function (error, response, body) {
     if (error || response.statusCode != 200) {
-      console.log('Error querying theater data from Google Movies.', error);
+      if (error === null) {
+        cb('Unknown error occured while querying theater data from Google Movies.');
+      } else {
+        cb(error);
+      }
+
       return;
     }
 
     var $ = cheerio.load(body);
 
     if ($('.theater').length === 0) {
-      console.log($('#results').text());
+      cb($('#results').text());
       return;
     }
 
@@ -172,7 +177,7 @@ Showtimes.prototype.getTheaters = function (cb) {
 
     // No pages to paginate, so return the theaters back.
     if ($('#navbar td a:contains("Next")').length === 0) {
-      cb(theaters);
+      cb(null, theaters);
       return;
     }
 
