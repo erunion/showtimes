@@ -9,8 +9,8 @@ npm install showtimes --save
 
 ## Usage
 ```javascript
-var Showtimes = require('showtimes');
-var s = new Showtimes(94118, {});
+var showtimes = require('showtimes');
+var s = showtimes(94118, {});
 
 s.getTheaters(function (theaters) {
   console.log(theaters);

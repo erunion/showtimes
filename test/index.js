@@ -1,9 +1,9 @@
-var Showtimes = require('../');
+var showtimes = require('../');
 var test = require('tap').test;
 var s = null;
 
 test('no movies available for a date far in the future', function (t) {
-  s = new Showtimes(94118, {
+  s = showtimes(94118, {
     date: 100
   });
 
@@ -14,7 +14,7 @@ test('no movies available for a date far in the future', function (t) {
 });
 
 test('get theaters from zipcode', function (t) {
-  s = new Showtimes(94118, {
+  s = showtimes(94118, {
     //date: 0
   });
 
@@ -26,7 +26,7 @@ test('get theaters from zipcode', function (t) {
 });
 
 test('get theaters from lat/long', function (t) {
-  s = new Showtimes('37.7822890,-122.4637080', {
+  s = showtimes('37.7822890,-122.4637080', {
     //date: 0
   });
 
