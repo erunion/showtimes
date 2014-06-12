@@ -12,7 +12,7 @@ npm install showtimes --save
 var showtimes = require('showtimes');
 var s = showtimes(94118, {});
 
-s.getTheaters(function (theaters) {
+s.getTheaters(function (err, theaters) {
   console.log(theaters);
 });
 ```
