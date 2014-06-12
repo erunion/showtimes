@@ -127,12 +127,12 @@ Showtimes.prototype.getTheaters = function (cb) {
         var imdb = false,
           trailer = false;
 
-        if (movie.find('.info a:contains("Trailer")')) {
+        if (movie.find('.info a:contains("Trailer")').length) {
           cloaked_url = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href');
           trailer = qs.parse(url.parse(cloaked_url).query).q;
         }
 
-        if (movie.find('.info a:contains("IMDb")')) {
+        if (movie.find('.info a:contains("IMDb")').length) {
           cloaked_url = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href');
           imdb = qs.parse(url.parse(cloaked_url).query).q;
         }
