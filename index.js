@@ -158,7 +158,7 @@ Showtimes.prototype.getTheaters = function (cb) {
         showtimes = showtimes.reverse();
         for (var x in showtimes) {
           showtime = showtimes[x].trim();
-          match = showtime.match(/(am|pm)/)
+          match = showtime.match(/(am|pm)/);
           if (match) {
             meridiem = match[0];
           } else {
@@ -169,7 +169,7 @@ Showtimes.prototype.getTheaters = function (cb) {
         }
 
         showtimes = showtimes.reverse();
-        for (var x in showtimes) {
+        for (x in showtimes) {
           movieData.showtimes.push(showtimes[x].trim());
         }
 
