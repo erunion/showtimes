@@ -148,6 +148,19 @@ Showtimes.prototype.getTheaters = function (cb) {
           showtimes: []
         };
 
+        // Remove non-ASCII characters.
+        if (movieData.runtime) {
+          movieData.runtime = movieData.runtime.replace(/[^\x00-\x7F]/g, '').trim();
+        }
+
+        if (movieData.rating) {
+          movieData.rating = movieData.rating.replace(/[^\x00-\x7F]/g, '').trim();
+        }
+
+        if (movieData.genre) {
+          movieData.genre = movieData.genre.replace(/[^\x00-\x7F]/g, '').trim();
+        }
+
         // Google displays showtimes like "10:00  11:20am  1:00  2:20  4:00  5:10  6:50  8:10  9:40  10:55pm". Since
         // they don't always apply am/pm to times, we need to run through the showtimes in reverse and then apply the
         // previous (later) meridiem to the next (earlier) movie showtime so we end up with something like
@@ -157,7 +170,8 @@ Showtimes.prototype.getTheaters = function (cb) {
 
         showtimes = showtimes.reverse();
         for (var x in showtimes) {
-          showtime = showtimes[x].trim();
+          // Remove non-ASCII characters.
+          showtime = showtimes[x].replace(/[^\x00-\x7F]/g, '').trim();
           match = showtime.match(/(am|pm)/);
           if (match) {
             meridiem = match[0];
