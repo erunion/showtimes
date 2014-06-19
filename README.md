@@ -21,7 +21,7 @@ s.getTheaters(function (err, theaters) {
 [ { id: '1441318e8d47fc1b',
     name: 'Vogue Theatre',
     address: '3290 Sacramento Street, San Francisco, CA',
-    phone_number: '(415) 346-2228',
+    phoneNumber: '(415) 346-2228',
     movies:
      [ { id: 'c30e28c6168184d9',
          name: 'Maleficent',
@@ -43,7 +43,7 @@ s.getTheaters(function (err, theaters) {
   { id: '87f533be471c287d',
     name: '4-Star Theatre',
     address: '2200 Clement Street, San Francisco, CA',
-    phone_number: '(415) 666-3488',
+    phoneNumber: '(415) 666-3488',
     movies:
      [ { id: 'e1e16ce6a6cedf0e',
          name: 'A Million Ways to Die in the West',

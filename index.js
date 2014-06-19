@@ -1,7 +1,9 @@
-var request = require('request'),
-  cheerio = require('cheerio'),
-  qs = require('querystring'),
-  url = require('url');
+'use strict';
+
+var request = require('request');
+var cheerio = require('cheerio');
+var qs = require('querystring');
+var url = require('url');
 
 /**
  * @param {string} location
@@ -31,9 +33,9 @@ function Showtimes(location, options) {
  * @returns {object}
  */
 Showtimes.prototype.getTheaters = function (cb) {
-  var self = this,
-    page = 1,
-    theaters = [];
+  var self = this;
+  var page = 1;
+  var theaters = [];
 
   if (arguments.length > 1) {
     page = arguments[1];
@@ -44,7 +46,7 @@ Showtimes.prototype.getTheaters = function (cb) {
     url: self.baseUrl,
     qs: {
       near: self.location,
-      date: typeof self.date != 'undefined' ? self.date : 0,
+      date: (typeof self.date !== 'undefined') ? self.date : 0,
       start: ((page - 1) * 10)
     },
     headers: {
@@ -53,7 +55,7 @@ Showtimes.prototype.getTheaters = function (cb) {
   };
 
   request(options, function (error, response, body) {
-    if (error || response.statusCode != 200) {
+    if (error || response.statusCode !== 200) {
       if (error === null) {
         cb('Unknown error occured while querying theater data from Google Movies.');
       } else {
@@ -65,6 +67,21 @@ Showtimes.prototype.getTheaters = function (cb) {
 
     var $ = cheerio.load(body);
 
+    var cloakedUrl;
+    var genre;
+    var imdb;
+    var info;
+    var match;
+    var meridiem;
+    var movieId;
+    var rating;
+    var runtime;
+    var showtime;
+    var showtimes;
+    var theaterId;
+    var theaterData;
+    var trailer;
+
     if ($('.theater').length === 0) {
       cb($('#results').text());
       return;
@@ -73,24 +90,24 @@ Showtimes.prototype.getTheaters = function (cb) {
     $('.theater').each(function (i, theater) {
       theater = $(theater);
 
-      var cloaked_url = theater.find('.desc h2.name a').attr('href');
-      var theater_id = qs.parse(url.parse(cloaked_url).query).tid;
+      cloakedUrl = theater.find('.desc h2.name a').attr('href');
+      theaterId = qs.parse(url.parse(cloakedUrl).query).tid;
 
-      var info = theater.find('.desc .info').text().split(' - ');
+      info = theater.find('.desc .info').text().split(' - ');
 
-      var theaterData = {
-        id: theater_id,
+      theaterData = {
+        id: theaterId,
         name: theater.find('.desc h2.name').text(),
         address: info[0].trim(),
-        phone_number: info[1].trim(),
+        phoneNumber: info[1].trim(),
         movies: []
       };
 
       theater.find('.showtimes .movie').each(function (i, movie) {
         movie = $(movie);
 
-        cloaked_url = movie.find('.name a').attr('href');
-        movie_id = qs.parse(url.parse(cloaked_url).query).mid;
+        cloakedUrl = movie.find('.name a').attr('href');
+        movieId = qs.parse(url.parse(cloakedUrl).query).mid;
 
         // Movie info format: RUNTIME - RATING - GENRE - TRAILER - IMDB
         // Some movies don't have a rating, trailer, or IMDb pages, so we need
@@ -101,7 +118,7 @@ Showtimes.prototype.getTheaters = function (cb) {
           runtime = info[0].trim();
           if (info[1].match(/Rated/)) {
             rating = info[1].replace(/Rated/, '').trim();
-            if (typeof info[2] != 'undefined') {
+            if (typeof info[2] !== 'undefined') {
               if (info[2].match(/(IMDB|Trailer)/i)) {
                 genre = false;
               } else {
@@ -124,21 +141,22 @@ Showtimes.prototype.getTheaters = function (cb) {
           genre = info[0].trim();
         }
 
-        var imdb = false,
-          trailer = false;
-
         if (movie.find('.info a:contains("Trailer")').length) {
-          cloaked_url = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href');
-          trailer = qs.parse(url.parse(cloaked_url).query).q;
+          cloakedUrl = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href');
+          trailer = qs.parse(url.parse(cloakedUrl).query).q;
+        } else {
+          trailer = false;
         }
 
         if (movie.find('.info a:contains("IMDb")').length) {
-          cloaked_url = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href');
-          imdb = qs.parse(url.parse(cloaked_url).query).q;
+          cloakedUrl = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href');
+          imdb = qs.parse(url.parse(cloakedUrl).query).q;
+        } else {
+          imdb = false;
         }
 
         var movieData = {
-          id: movie_id,
+          id: movieId,
           name: movie.find('.name').text(),
           runtime: info[0].trim(),
           rating: rating,
@@ -165,8 +183,8 @@ Showtimes.prototype.getTheaters = function (cb) {
         // they don't always apply am/pm to times, we need to run through the showtimes in reverse and then apply the
         // previous (later) meridiem to the next (earlier) movie showtime so we end up with something like
         // ["10:00am", "11:20am", "1:00pm", ...].
-        var showtimes = movie.find('.times').text().split(' '),
-          meridiem = false;
+        showtimes = movie.find('.times').text().split(' ');
+        meridiem = false;
 
         showtimes = showtimes.reverse();
         for (var x in showtimes) {

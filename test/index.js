@@ -1,3 +1,5 @@
+'use strict';
+
 var showtimes = require('../');
 var test = require('tap').test;
 var s = null;
