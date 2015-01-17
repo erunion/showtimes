@@ -98,8 +98,8 @@ Showtimes.prototype.getTheaters = function (cb) {
       theaterData = {
         id: theaterId,
         name: theater.find('.desc h2.name').text(),
-        address: info[0].trim(),
-        phoneNumber: info[1].trim(),
+        address: info[0] ? info[0].trim() : "",
+        phoneNumber: info[1] ? info[1].trim() : "",
         movies: []
       };
 
