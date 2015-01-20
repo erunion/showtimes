@@ -103,7 +103,7 @@ Showtimes.prototype.getTheaters = function (cb) {
         movies: []
       };
 
-      theater.find('.showtimes .movie').each(function (i, movie) {
+      theater.find('.showtimes .movie').each(function (j, movie) {
         movie = $(movie);
 
         cloakedUrl = movie.find('.name a').attr('href');
@@ -137,6 +137,7 @@ Showtimes.prototype.getTheaters = function (cb) {
             }
           }
         } else {
+          runtime = false;
           rating = false;
           genre = info[0].trim();
         }
@@ -158,7 +159,7 @@ Showtimes.prototype.getTheaters = function (cb) {
         var movieData = {
           id: movieId,
           name: movie.find('.name').text(),
-          runtime: info[0].trim(),
+          runtime: runtime,
           rating: rating,
           genre: genre,
           imdb: imdb,

@@ -9,7 +9,7 @@ test('no movies available for a date far in the future', function (t) {
     date: 200
   });
 
-  s.getTheaters(function (err, theaters) {
+  s.getTheaters(function (err) {
     t.type(err, 'string');
     t.end();
   });
