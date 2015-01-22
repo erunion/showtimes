@@ -13,11 +13,10 @@ function Showtimes(location, options) {
     if (!(this instanceof Showtimes)) {
         return new Showtimes(location, options);
     }
-    
     this.userAgent = 'showtimes (http://github.com/jonursenbach/showtimes)';
     this.baseUrl = 'http://google.com/movies';
     this.location = location;
-    
+ 
     var reserved = Object.keys(Showtimes.prototype);
     for (var i in options) {
         if (reserved.indexOf(i) === -1) {
@@ -236,7 +235,7 @@ Showtimes.prototype.getMovie = function(mid, cb) {
     url: self.baseUrl,
     qs: {
     mid: mid,
-    date: (typeof self.date !== 'undefined') ? self.date : 0,
+    date: (typeof self.date !== 'undefined') ? self.date : 0
     },
     headers: {
         'User-Agent': self.userAgent
@@ -256,18 +255,12 @@ Showtimes.prototype.getMovie = function(mid, cb) {
             
             var $ = cheerio.load(body);
             
-            var cloakedUrl;
-            var info;
             var match;
             var meridiem;
-            var movieId;
-            var rating;
-            var runtime;
             var showtime;
             var showtimes;
             var theaterId;
             var theaterData;
-            var trailer;
             
             if (!$('.showtimes')) {
             cb($('#results'));
@@ -278,7 +271,7 @@ Showtimes.prototype.getMovie = function(mid, cb) {
                theater = $(theater);
                
                theaterData = {
-               id: "0",
+               id: '0',
                name: theater.find('.name').text(),
                phoneNumber: theater.find('.address').text(),
                showtimes: []
