@@ -38,15 +38,18 @@ test('get theaters from zipcode', function (t) {
   });
 });
 
-test('get theaters from zipcode', function (t) {
+test('get theaters from zipcode and get movie for first movie id', function (t) {
      s = showtimes(90504, {
                    //date: 0
                    });
      
      s.getTheaters(function (err, theaters) {
        t.equal(err, null);
-       console.log(theaters.movies);
-//       t.equal(theaters.movies[0], 12);
+       s.getMovie((theaters[0].movies[0].id), function (err, theaters) {
+           t.equal(err, null);
+           console.log(theaters[0].showtimes.length > 0);
+           t.ok(theaters[0].showtimes);
+       });
        t.end();
   });
 });
