@@ -38,6 +38,19 @@ test('get theaters from zipcode', function (t) {
   });
 });
 
+test('get theaters from zipcode', function (t) {
+     s = showtimes(90504, {
+                   //date: 0
+                   });
+     
+     s.getTheaters(function (err, theaters) {
+       t.equal(err, null);
+       console.log(theaters.movies);
+//       t.equal(theaters.movies[0], 12);
+       t.end();
+  });
+});
+
 test('get theaters from foreign postal code and theater with no phone number', function (t) {
   s = showtimes('752 01', {
     //date: 0
