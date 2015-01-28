@@ -91,7 +91,7 @@ Showtimes.prototype.getTheaters = function (cb) {
       theater = $(theater);
 
       cloakedUrl = theater.find('.desc h2.name a').attr('href');
-      theaterId = qs.parse(url.parse(cloakedUrl).query).tid;
+      theaterId = cloakedUrl ? "" : qs.parse(url.parse(cloakedUrl).query).tid;
 
       info = theater.find('.desc .info').text().split(' - ');
 
