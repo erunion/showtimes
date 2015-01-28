@@ -31,7 +31,7 @@ function Showtimes(location, options) {
  * @param {object=} [theaters=[]] - Current theaters object. Hidden API and used during pagination.
  * @returns {object}
  */
-Showtimes.prototype.getTheaters = function(cb) {
+Showtimes.prototype.getTheaters = function (cb) {
   var self = this;
   var page = 1;
   var theaters = [];
@@ -86,7 +86,7 @@ Showtimes.prototype.getTheaters = function(cb) {
       return;
     }
 
-    $('.theater').each(function(i, theater) {
+    $('.theater').each(function (i, theater) {
       theater = $(theater);
 
       cloakedUrl = theater.find('.desc h2.name a').attr('href');
@@ -103,7 +103,7 @@ Showtimes.prototype.getTheaters = function(cb) {
         movies: []
       };
 
-      theater.find('.showtimes .movie').each(function(j, movie) {
+      theater.find('.showtimes .movie').each(function (j, movie) {
         movie = $(movie);
 
         cloakedUrl = movie.find('.name a').attr('href');
@@ -229,7 +229,7 @@ Showtimes.prototype.getTheaters = function(cb) {
  * @param {function} cb - Callback to handle the resulting movie object.
  * @returns {object}
  */
-Showtimes.prototype.getMovie = function(mid, cb) {
+Showtimes.prototype.getMovie = function (mid, cb) {
   var self = this;
   var theaters = [];
 
@@ -244,7 +244,7 @@ Showtimes.prototype.getMovie = function(mid, cb) {
     }
   };
 
-  request(options, function(error, response, body) {
+  request(options, function (error, response, body) {
     if (error || response.statusCode !== 200) {
       if (error === null) {
         cb('Unknown error occured while querying theater data from Google Movies.');
@@ -269,7 +269,7 @@ Showtimes.prototype.getMovie = function(mid, cb) {
       return;
     }
 
-    $('.theater').each(function(i, theater) {
+    $('.theater').each(function (i, theater) {
       theater = $(theater);
 
       theaterData = {
