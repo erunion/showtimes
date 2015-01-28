@@ -53,7 +53,7 @@ Showtimes.prototype.getTheaters = function (cb) {
     }
   };
 
-  request(options, function(error, response, body) {
+  request(options, function (error, response, body) {
     if (error || response.statusCode !== 200) {
       if (error === null) {
         cb('Unknown error occured while querying theater data from Google Movies.');
@@ -90,7 +90,6 @@ Showtimes.prototype.getTheaters = function (cb) {
       theater = $(theater);
 
       cloakedUrl = theater.find('.desc h2.name a').attr('href');
-
       theaterId = qs.parse(url.parse(cloakedUrl).query).tid;
 
       info = theater.find('.desc .info').text().split(' - ');
@@ -144,7 +143,6 @@ Showtimes.prototype.getTheaters = function (cb) {
 
         if (movie.find('.info a:contains("Trailer")').length) {
           cloakedUrl = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href');
-
           trailer = qs.parse(url.parse(cloakedUrl).query).q;
         } else {
           trailer = false;
