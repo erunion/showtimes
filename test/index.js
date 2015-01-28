@@ -77,3 +77,15 @@ test('get theaters from lat/long', function (t) {
     t.end();
   });
 });
+
+test('get theaters from lat/long', function (t) {
+  s = showtimes('45.531531531531535,-122.61220863200342', {
+    //date: 0
+  });
+
+  s.getTheaters(function (err, theaters) {
+    t.equal(err, null);
+    t.equal(theaters.length, 12);
+    t.end();
+  });
+});
