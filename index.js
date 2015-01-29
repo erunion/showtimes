@@ -261,6 +261,9 @@ Showtimes.prototype.getMovie = function (mid, cb) {
     var rating;
     var runtime;
     var trailer;
+    var director;
+    var cast;
+    var description;
     var info;
     var match;
     var meridiem;
@@ -279,8 +282,13 @@ Showtimes.prototype.getMovie = function (mid, cb) {
     // Movie info format: RUNTIME - RATING - GENRE - TRAILER - IMDB
     // Some movies don't have a rating, trailer, or IMDb pages, so we need
     // to account for that.
-    info = movie.find('.desc .info.links').text().split(' - ');
-
+    // There is a br dividing the info from the director and actor info. Replacing it with
+    // a new line makes it easier to split
+    
+    movie.find('.desc .info ').not('.info.links').find('> br').replaceWith("\n");
+    var infoArray = movie.find('.desc .info').not('.info.links').text().split('\n');
+    info = infoArray[0].split(' - ');
+    
     if (info[0].match(/(hr |min)/)) {
       runtime = info[0].trim();
       if (info[1].match(/Rated/)) {
@@ -308,15 +316,31 @@ Showtimes.prototype.getMovie = function (mid, cb) {
       rating = false;
       genre = info[0].trim();
     }
+          
+    info = infoArray[1].split(' - ');
+    if (info[0].match(/Director:/)) {
+      director = info[0].replace(/Director:/, '').trim();
+    }
+    if (info[1].match(/Cast:/)) {
+      cast = info[1].replace(/Cast:/, '').trim().split(', ');
+    }
+    
+    // Longer descriptions can be split between two spans and displays a more/less link
+    
+    description = movie.find('span[itemprop="description"]').text();
+    movie.find('#SynopsisSecond0').children().last().remove()
+    description = description + movie.find('#SynopsisSecond0').text();
+    description.replace('/"/', '');
+    description = description.trim();
 
-    if (movie.find('.info a:contains("Trailer")').length) {
+    if (movie.find('.info.links a:contains("Trailer")').length) {
       cloakedUrl = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href');
       trailer = qs.parse(url.parse(cloakedUrl).query).q;
     } else {
       trailer = false;
     }
 
-    if (movie.find('.info a:contains("IMDb")').length) {
+    if (movie.find('.info.links a:contains("IMDb")').length) {
       cloakedUrl = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href');
       imdb = qs.parse(url.parse(cloakedUrl).query).q;
     } else {
@@ -331,6 +355,9 @@ Showtimes.prototype.getMovie = function (mid, cb) {
       genre: genre,
       imdb: imdb,
       trailer: trailer,
+      director: director,
+      cast: cast,
+      description: description,
       theaters: []
     };
 
