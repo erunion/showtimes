@@ -7,7 +7,7 @@
   },
   "description": "a movie showtimes API",
   "keywords": [
-    "movie ",
+    "movie",
     "showtimes"
   ],
   "licenses": "MIT",
