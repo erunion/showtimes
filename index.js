@@ -229,11 +229,11 @@ Showtimes.prototype.getTheaters = function (cb) {
  */
 Showtimes.prototype.getMovie = function (mid, cb) {
   var self = this;
-  var theaters = [];
 
   var options = {
     url: self.baseUrl,
     qs: {
+      near: self.location,
       mid: mid,
       date: (typeof self.date !== 'undefined') ? self.date : 0
     },
@@ -255,6 +255,13 @@ Showtimes.prototype.getMovie = function (mid, cb) {
 
     var $ = cheerio.load(body);
 
+    var cloakedUrl;
+    var genre;
+    var imdb;
+    var rating;
+    var runtime;
+    var trailer;
+    var info;
     var match;
     var meridiem;
     var showtime;
@@ -267,13 +274,89 @@ Showtimes.prototype.getMovie = function (mid, cb) {
       return;
     }
 
+    var movie = $('.movie');
+
+    // Movie info format: RUNTIME - RATING - GENRE - TRAILER - IMDB
+    // Some movies don't have a rating, trailer, or IMDb pages, so we need
+    // to account for that.
+    info = movie.find('.desc .info.links').text().split(' - ');
+
+    if (info[0].match(/(hr |min)/)) {
+      runtime = info[0].trim();
+      if (info[1].match(/Rated/)) {
+        rating = info[1].replace(/Rated/, '').trim();
+        if (typeof info[2] !== 'undefined') {
+          if (info[2].match(/(IMDB|Trailer)/i)) {
+            genre = false;
+          } else {
+            genre = info[2].trim();
+          }
+        } else {
+          genre = false;
+        }
+      } else {
+        rating = false;
+
+        if (info[1].match(/(IMDB|Trailer)/i)) {
+          genre = false;
+        } else {
+          genre = info[1].trim();
+        }
+      }
+    } else {
+      runtime = false;
+      rating = false;
+      genre = info[0].trim();
+    }
+
+    if (movie.find('.info a:contains("Trailer")').length) {
+      cloakedUrl = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href');
+      trailer = qs.parse(url.parse(cloakedUrl).query).q;
+    } else {
+      trailer = false;
+    }
+
+    if (movie.find('.info a:contains("IMDb")').length) {
+      cloakedUrl = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href');
+      imdb = qs.parse(url.parse(cloakedUrl).query).q;
+    } else {
+      imdb = false;
+    }
+
+    var movieData = {
+      id: mid,
+      name: movie.find('h2[itemprop="name"]').text(),
+      runtime: runtime,
+      rating: rating,
+      genre: genre,
+      imdb: imdb,
+      trailer: trailer,
+      theaters: []
+    };
+
+    // Remove non-ASCII characters.
+    if (movieData.runtime) {
+      movieData.runtime = movieData.runtime.replace(/[^\x00-\x7F]/g, '').trim();
+    }
+
+    if (movieData.rating) {
+      movieData.rating = movieData.rating.replace(/[^\x00-\x7F]/g, '').trim();
+    }
+
+    if (movieData.genre) {
+      movieData.genre = movieData.genre.replace(/[^\x00-\x7F]/g, '').trim();
+    }
+
+
     $('.theater').each(function (i, theater) {
       theater = $(theater);
+      cloakedUrl = theater.find('.name a').attr('href');
+      theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : '';
 
       theaterData = {
-        id: '0',
+        id: theaterId,
         name: theater.find('.name').text(),
-        phoneNumber: theater.find('.address').text(),
+        address: theater.find('.address').text(),
         showtimes: []
       };
 
@@ -303,9 +386,9 @@ Showtimes.prototype.getMovie = function (mid, cb) {
         theaterData.showtimes.push(showtimes[x].trim());
       }
 
-      theaters.push(theaterData);
+      movieData.theaters.push(theaterData);
     });
-    cb(null, theaters);
+    cb(null, movieData);
 
     return;
   });
