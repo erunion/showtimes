@@ -284,11 +284,11 @@ Showtimes.prototype.getMovie = function (mid, cb) {
     // to account for that.
     // There is a br dividing the info from the director and actor info. Replacing it with
     // a new line makes it easier to split
-    
-    movie.find('.desc .info ').not('.info.links').find('> br').replaceWith("\n");
-    var infoArray = movie.find('.desc .info').not('.info.links').text().split('\n');
+
+    movie.find('.desc.info').not('.info.links').find('> br').replaceWith("\n");
+    var infoArray = movie.find('.desc.info').not('.info.links').text().split('\n');
     info = infoArray[0].split(' - ');
-    
+
     if (info[0].match(/(hr |min)/)) {
       runtime = info[0].trim();
       if (info[1].match(/Rated/)) {
@@ -316,17 +316,19 @@ Showtimes.prototype.getMovie = function (mid, cb) {
       rating = false;
       genre = info[0].trim();
     }
-          
-    info = infoArray[1].split(' - ');
-    if (info[0].match(/Director:/)) {
-      director = info[0].replace(/Director:/, '').trim();
+
+    info = infoArray[1] ? infoArray[1].split(' - ') : undefined;
+    if (info) {
+      if (info[0].match(/Director:/)) {
+        director = info[0].replace(/Director:/, '').trim();
+      }
+      if (info[1].match(/Cast:/)) {
+        cast = info[1].replace(/Cast:/, '').trim().split(', ');
+      }
     }
-    if (info[1].match(/Cast:/)) {
-      cast = info[1].replace(/Cast:/, '').trim().split(', ');
-    }
-    
+
     // Longer descriptions can be split between two spans and displays a more/less link
-    
+
     description = movie.find('span[itemprop="description"]').text();
     movie.find('#SynopsisSecond0').children().last().remove()
     description = description + movie.find('#SynopsisSecond0').text();

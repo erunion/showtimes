@@ -20,12 +20,12 @@
     "email": "jon@ursenba.ch"
   },
   "dependencies": {
-    "cheerio": "^0.16.0",
-    "request": "^2.36.0"
+    "cheerio": "^0.18.0",
+    "request": "^2.51.0"
   },
   "devDependencies": {
-    "eslint": "^0.12.0",
-    "tap": "^0.4.9"
+    "eslint": "^0.13.0",
+    "tap": "^0.5.0"
   },
   "main": "index.js",
   "engines": {

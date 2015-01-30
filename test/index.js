@@ -36,8 +36,7 @@ test('get theaters from zipcode and get movie for first movie id', function (t) 
     t.equal(err, null);
     s.getMovie((theaters[0].movies[0].id), function (err, movie) {
       t.equal(err, null);
-      console.log(movie.theaters[0].showtimes.length > 0);
-      t.ok(theaters[0].showtimes);
+      t.ok(movie.theaters[0].showtimes.length > 0);
     });
     t.end();
   });
