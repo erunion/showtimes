@@ -241,8 +241,8 @@ Showtimes.prototype.getMovie = function (mid, cb) {
       'User-Agent': self.userAgent
     }
   };
-
   request(options, function (error, response, body) {
+
     if (error || response.statusCode !== 200) {
       if (error === null) {
         cb('Unknown error occured while querying theater data from Google Movies.');
@@ -252,7 +252,6 @@ Showtimes.prototype.getMovie = function (mid, cb) {
 
       return;
     }
-
     var $ = cheerio.load(body);
 
     var cloakedUrl;
@@ -285,10 +284,9 @@ Showtimes.prototype.getMovie = function (mid, cb) {
     // There is a br dividing the info from the director and actor info. Replacing it with
     // a new line makes it easier to split
 
-    movie.find('.desc.info').not('.info.links').find('> br').replaceWith("\n");
-    var infoArray = movie.find('.desc.info').not('.info.links').text().split('\n');
+    movie.find('.desc .info').not('.info.links').find('> br').replaceWith("\n");
+    var infoArray = movie.find('.desc .info').not('.info.links').text().split('\n');
     info = infoArray[0].split(' - ');
-
     if (info[0].match(/(hr |min)/)) {
       runtime = info[0].trim();
       if (info[1].match(/Rated/)) {
@@ -328,7 +326,6 @@ Showtimes.prototype.getMovie = function (mid, cb) {
     }
 
     // Longer descriptions can be split between two spans and displays a more/less link
-
     description = movie.find('span[itemprop="description"]').text();
     movie.find('#SynopsisSecond0').children().last().remove()
     description = description + movie.find('#SynopsisSecond0').text();
@@ -414,11 +411,10 @@ Showtimes.prototype.getMovie = function (mid, cb) {
       for (x in showtimes) {
         theaterData.showtimes.push(showtimes[x].trim());
       }
-
       movieData.theaters.push(theaterData);
     });
-    cb(null, movieData);
 
+    cb(null, movieData);
     return;
   });
 };
