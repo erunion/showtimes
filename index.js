@@ -284,7 +284,7 @@ Showtimes.prototype.getMovie = function (mid, cb) {
     // There is a br dividing the info from the director and actor info. Replacing it with
     // a new line makes it easier to split
 
-    movie.find('.desc .info').not('.info.links').find('> br').replaceWith("\n");
+    movie.find('.desc .info').not('.info.links').find('> br').replaceWith('\n');
     var infoArray = movie.find('.desc .info').not('.info.links').text().split('\n');
     info = infoArray[0].split(' - ');
     if (info[0].match(/(hr |min)/)) {
@@ -327,7 +327,7 @@ Showtimes.prototype.getMovie = function (mid, cb) {
 
     // Longer descriptions can be split between two spans and displays a more/less link
     description = movie.find('span[itemprop="description"]').text();
-    movie.find('#SynopsisSecond0').children().last().remove()
+    movie.find('#SynopsisSecond0').children().last().remove();
     description = description + movie.find('#SynopsisSecond0').text();
     description.replace('/"/', '');
     description = description.trim();
