@@ -193,7 +193,7 @@ Showtimes.prototype.getTheaters = function (cb) {
           match = showtime.match(/(am|pm)/);
           if (match) {
             meridiem = match[0];
-          } else {
+          } else if (meridiem) {
             showtime += meridiem;
           }
 
