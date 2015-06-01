@@ -115,6 +115,9 @@ Showtimes.prototype.getTheaters = function (cb) {
 
         if (info[0].match(/(hr |min)/)) {
           runtime = info[0].trim();
+          if(!info[1]){
+            info[1] = "";
+          }
           if (info[1].match(/Rated/)) {
             rating = info[1].replace(/Rated/, '').trim();
             if (typeof info[2] !== 'undefined') {
