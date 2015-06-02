@@ -45,7 +45,7 @@ Showtimes.prototype.getTheaters = function (cb) {
   var options = {
     url: self.baseUrl,
     qs: {
-      hl: self.lang,
+      hl: self.lang || "en",
       near: self.location,
       date: (typeof self.date !== 'undefined') ? self.date : 0,
       start: ((page - 1) * 10)
