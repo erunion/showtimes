@@ -16,6 +16,7 @@ function Showtimes(location, options) {
   this.userAgent = 'showtimes (http://github.com/jonursenbach/showtimes)';
   this.baseUrl = 'http://google.com/movies';
   this.location = location;
+  this.lang = location;
 
   var reserved = Object.keys(Showtimes.prototype);
   for (var i in options) {
@@ -44,6 +45,7 @@ Showtimes.prototype.getTheaters = function (cb) {
   var options = {
     url: self.baseUrl,
     qs: {
+      hl: self.lang,
       near: self.location,
       date: (typeof self.date !== 'undefined') ? self.date : 0,
       start: ((page - 1) * 10)
@@ -112,7 +114,6 @@ Showtimes.prototype.getTheaters = function (cb) {
         // Some movies don't have a rating, trailer, or IMDb pages, so we need
         // to account for that.
         info = movie.find('.info').text().split(' - ');
-
         if (info[0].match(/(hr |min)/)) {
           runtime = info[0].trim();
           if(!info[1]){
