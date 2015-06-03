@@ -13,10 +13,10 @@ function Showtimes(location, options) {
   if (!(this instanceof Showtimes)) {
     return new Showtimes(location, options);
   }
+
   this.userAgent = 'showtimes (http://github.com/jonursenbach/showtimes)';
   this.baseUrl = 'http://google.com/movies';
   this.location = location;
-  this.lang = location;
 
   var reserved = Object.keys(Showtimes.prototype);
   for (var i in options) {
