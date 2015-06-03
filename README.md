@@ -71,6 +71,7 @@ s.getTheaters(function (err, theaters) {
 * `location` - location you want to pull showtimes for. can be either a zipcode, latitude and Longitude, or a full address.
 * `options`
   * `date` - number of days in the future you want to pull showtimes for (ex. on june 9, 2014, pulling showtimes for july 29 you'd pass in "50").
+  * `lang` - language of the response,this will change the movie names etc. (ex. 'en'(default) or 'tr' for turkish data)
 
 ### `Showtimes.getTheaters(callback)`
 Callback to handle your theater showtime data. Is passed a single argument of theaters.
