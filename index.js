@@ -51,8 +51,10 @@ Showtimes.prototype.getTheaters = function (cb) {
       start: ((page - 1) * 10)
     },
     headers: {
-      'User-Agent': self.userAgent
-    }
+      'User-Agent': self.userAgent,
+      'gzip':true
+    },
+    encoding:'binary'
   };
 
   request(options, function (error, response, body) {
