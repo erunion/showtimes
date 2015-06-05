@@ -52,9 +52,9 @@ Showtimes.prototype.getTheaters = function (cb) {
     },
     headers: {
       'User-Agent': self.userAgent,
-      'gzip':true
+      'gzip': true
     },
-    encoding:'binary'
+    encoding: 'binary'
   };
 
   request(options, function (error, response, body) {
