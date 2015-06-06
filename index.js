@@ -42,6 +42,10 @@ Showtimes.prototype.getTheaters = function (cb) {
     theaters = arguments[2];
   }
 
+  if (typeof self.pageLimit === 'undefined'){
+    self.pageLimit = 999;
+  }
+
   var options = {
     url: self.baseUrl,
     qs: {
@@ -218,7 +222,7 @@ Showtimes.prototype.getTheaters = function (cb) {
     });
 
     // No pages to paginate, so return the theaters back.
-    if ($('#navbar td a:contains("Next")').length === 0) {
+    if ($('#navbar td a:contains("Next")').length === 0 || page == self.pageLimit) {
       cb(null, theaters);
       return;
     }
