@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "cheerio": "^0.18.0",
+    "iconv-lite": "^0.4.10",
     "request": "^2.51.0"
   },
   "devDependencies": {
