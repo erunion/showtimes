@@ -4,6 +4,7 @@ var request = require('request');
 var cheerio = require('cheerio');
 var qs = require('querystring');
 var url = require('url');
+var iconv = require('iconv-lite');
 
 /**
  * @param {string} location
@@ -72,6 +73,10 @@ Showtimes.prototype.getTheaters = function (cb) {
       return;
     }
 
+    if (self.lang == 'tr') {
+      body = iconv.decode(body,'latin5');
+    }
+    
     var $ = cheerio.load(body);
 
     var cloakedUrl;
