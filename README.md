@@ -15,6 +15,10 @@ var s = showtimes(90504, {});
 s.getTheaters(function (err, theaters) {
   console.log(theaters);
 });
+
+s.getMovies(function (err, movies) {
+  console.log(movies);
+});
 ```
 
 ```javascript

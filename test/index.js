@@ -54,6 +54,18 @@ test('get theaters from lat/long', function (t) {
   });
 });
 
+test('get movies from lat/long', function (t) {
+  s = showtimes('33.8358,-118.3406', {
+    //date: 0
+  });
+
+  s.getMovies(function (err, movies) {
+    t.equal(err, null);
+    t.ok(movies.length > 1);
+    t.end();
+  });
+});
+
 test('get theaters from lat/long', function (t) {
   s = showtimes('45.531531531531535,-122.61220863200342', {
     //date: 0
@@ -63,5 +75,17 @@ test('get theaters from lat/long', function (t) {
     t.equal(err, null);
     t.ok(theaters.length > 1);
     t.end();
+  });
+});
+
+test('get movies from lat/long', function (t) {
+  s = showtimes('45.531531531531535,-122.61220863200342', {
+    //date: 0
+  });
+
+  s.getMovies(function(err, movies) {
+    t.equal(err, null);
+    t.ok(movies.length > 1);
+    t.end()
   });
 });
