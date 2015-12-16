@@ -1,28 +1,26 @@
-'use strict';
-
-var request = require('request');
-var cheerio = require('cheerio');
-var qs = require('querystring');
-var url = require('url');
-var iconv = require('iconv-lite');
+var request = require('request')
+var cheerio = require('cheerio')
+var qs = require('querystring')
+var url = require('url')
+var iconv = require('iconv-lite')
 
 /**
  * @param {string} location
  * @param {object=} options
  */
-function Showtimes(location, options) {
+function Showtimes (location, options) {
   if (!(this instanceof Showtimes)) {
-    return new Showtimes(location, options);
+    return new Showtimes(location, options)
   }
 
-  this.userAgent = 'showtimes (http://github.com/erunion/showtimes)';
-  this.baseUrl = 'http://google.com/movies';
-  this.location = location;
+  this.userAgent = 'showtimes (http://github.com/erunion/showtimes)'
+  this.baseUrl = 'http://google.com/movies'
+  this.location = location
 
-  var reserved = Object.keys(Showtimes.prototype);
+  var reserved = Object.keys(Showtimes.prototype)
   for (var i in options) {
     if (reserved.indexOf(i) === -1) {
-      this[i] = options[i];
+      this[i] = options[i]
     }
   }
 }
@@ -34,23 +32,23 @@ function Showtimes(location, options) {
  * @returns {object}
  */
 Showtimes.prototype.getTheaters = function (cb) {
-  var self = this;
-  var page = 1;
-  var theaters = [];
+  var self = this
+  var page = 1
+  var theaters = []
 
   if (arguments.length > 1) {
-    page = arguments[1];
-    theaters = arguments[2];
+    page = arguments[1]
+    theaters = arguments[2]
   }
 
-  if (typeof self.pageLimit === 'undefined'){
-    self.pageLimit = 999;
+  if (typeof self.pageLimit === 'undefined') {
+    self.pageLimit = 999
   }
 
   var options = {
     url: self.baseUrl,
     qs: {
-      hl: (typeof self.lang !== 'undefined') ? self.lang : "en",
+      hl: (typeof self.lang !== 'undefined') ? self.lang : 'en',
       near: self.location,
       date: (typeof self.date !== 'undefined') ? self.date : 0,
       start: ((page - 1) * 10)
@@ -60,52 +58,52 @@ Showtimes.prototype.getTheaters = function (cb) {
       'gzip': true
     },
     encoding: 'binary'
-  };
+  }
 
   request(options, function (error, response, body) {
     if (error || response.statusCode !== 200) {
       if (error === null) {
-        cb('Unknown error occured while querying theater data from Google Movies.');
+        cb('Unknown error occured while querying theater data from Google Movies.')
       } else {
-        cb(error);
+        cb(error)
       }
 
-      return;
+      return
     }
 
-    if (self.lang == 'tr') {
-      body = iconv.decode(body,'latin5');
+    if (self.lang === 'tr') {
+      body = iconv.decode(body, 'latin5')
     }
 
-    var $ = cheerio.load(body);
+    var $ = cheerio.load(body)
 
-    var cloakedUrl;
-    var genre;
-    var imdb;
-    var info;
-    var match;
-    var meridiem;
-    var movieId;
-    var rating;
-    var runtime;
-    var showtime;
-    var showtimes;
-    var theaterId;
-    var theaterData;
-    var trailer;
+    var cloakedUrl
+    var genre
+    var imdb
+    var info
+    var match
+    var meridiem
+    var movieId
+    var rating
+    var runtime
+    var showtime
+    var showtimes
+    var theaterId
+    var theaterData
+    var trailer
 
     if ($('.theater').length === 0) {
-      cb($('#results').text());
-      return;
+      cb($('#results').text())
+      return
     }
 
     $('.theater').each(function (i, theater) {
-      theater = $(theater);
+      theater = $(theater)
 
-      cloakedUrl = theater.find('.desc h2.name a').attr('href');
-      theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : '';
+      cloakedUrl = theater.find('.desc h2.name a').attr('href')
+      theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : ''
 
-      info = theater.find('.desc .info').text().split(' - ');
+      info = theater.find('.desc .info').text().split(' - ')
 
       theaterData = {
         id: theaterId,
@@ -113,61 +111,62 @@ Showtimes.prototype.getTheaters = function (cb) {
         address: info[0] ? info[0].trim() : '',
         phoneNumber: info[1] ? info[1].trim() : '',
         movies: []
-      };
+      }
 
       theater.find('.showtimes .movie').each(function (j, movie) {
-        movie = $(movie);
+        movie = $(movie)
 
-        cloakedUrl = movie.find('.name a').attr('href');
-        movieId = qs.parse(url.parse(cloakedUrl).query).mid;
+        cloakedUrl = movie.find('.name a').attr('href')
+        movieId = qs.parse(url.parse(cloakedUrl).query).mid
 
         // Movie info format: RUNTIME - RATING - GENRE - TRAILER - IMDB
         // Some movies don't have a rating, trailer, or IMDb pages, so we need
         // to account for that.
-        info = movie.find('.info').text().split(' - ');
+        info = movie.find('.info').text().split(' - ')
         if (info[0].match(/(hr |min)/)) {
-          runtime = info[0].trim();
-          if(!info[1]){
-            info[1] = "";
+          runtime = info[0].trim()
+          if (!info[1]) {
+            info[1] = ''
           }
+
           if (info[1].match(/Rated/)) {
-            rating = info[1].replace(/Rated/, '').trim();
+            rating = info[1].replace(/Rated/, '').trim()
             if (typeof info[2] !== 'undefined') {
               if (info[2].match(/(IMDB|Trailer)/i)) {
-                genre = false;
+                genre = false
               } else {
-                genre = info[2].trim();
+                genre = info[2].trim()
               }
             } else {
-              genre = false;
+              genre = false
             }
           } else {
-            rating = false;
+            rating = false
 
             if (info[1].match(/(IMDB|Trailer)/i)) {
-              genre = false;
+              genre = false
             } else {
-              genre = info[1].trim();
+              genre = info[1].trim()
             }
           }
         } else {
-          runtime = false;
-          rating = false;
-          genre = info[0].trim();
+          runtime = false
+          rating = false
+          genre = info[0].trim()
         }
 
         if (movie.find('.info a:contains("Trailer")').length) {
-          cloakedUrl = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href');
-          trailer = qs.parse(url.parse(cloakedUrl).query).q;
+          cloakedUrl = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href')
+          trailer = qs.parse(url.parse(cloakedUrl).query).q
         } else {
-          trailer = false;
+          trailer = false
         }
 
         if (movie.find('.info a:contains("IMDb")').length) {
-          cloakedUrl = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href');
-          imdb = qs.parse(url.parse(cloakedUrl).query).q;
+          cloakedUrl = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href')
+          imdb = qs.parse(url.parse(cloakedUrl).query).q
         } else {
-          imdb = false;
+          imdb = false
         }
 
         var movieData = {
@@ -179,64 +178,64 @@ Showtimes.prototype.getTheaters = function (cb) {
           imdb: imdb,
           trailer: trailer,
           showtimes: []
-        };
+        }
 
         // Remove non-ASCII characters.
         if (movieData.runtime) {
-          movieData.runtime = movieData.runtime.replace(/[^\x00-\x7F]/g, '').trim();
+          movieData.runtime = movieData.runtime.replace(/[^\x00-\x7F]/g, '').trim()
         }
 
         if (movieData.rating) {
-          movieData.rating = movieData.rating.replace(/[^\x00-\x7F]/g, '').trim();
+          movieData.rating = movieData.rating.replace(/[^\x00-\x7F]/g, '').trim()
         }
 
         if (movieData.genre) {
-          movieData.genre = movieData.genre.replace(/[^\x00-\x7F]/g, '').trim();
+          movieData.genre = movieData.genre.replace(/[^\x00-\x7F]/g, '').trim()
         }
 
         // Google displays showtimes like "10:00  11:20am  1:00  2:20  4:00  5:10  6:50  8:10  9:40  10:55pm". Since
         // they don't always apply am/pm to times, we need to run through the showtimes in reverse and then apply the
         // previous (later) meridiem to the next (earlier) movie showtime so we end up with something like
         // ["10:00am", "11:20am", "1:00pm", ...].
-        showtimes = movie.find('.times').text().split(' ');
-        meridiem = false;
+        showtimes = movie.find('.times').text().split(' ')
+        meridiem = false
 
-        showtimes = showtimes.reverse();
+        showtimes = showtimes.reverse()
         for (var x in showtimes) {
           // Remove non-ASCII characters.
-          showtime = showtimes[x].replace(/[^\x00-\x7F]/g, '').trim();
-          match = showtime.match(/(am|pm)/);
+          showtime = showtimes[x].replace(/[^\x00-\x7F]/g, '').trim()
+          match = showtime.match(/(am|pm)/)
           if (match) {
-            meridiem = match[0];
+            meridiem = match[0]
           } else if (meridiem) {
-            showtime += meridiem;
+            showtime += meridiem
           }
 
-          showtimes[x] = showtime;
+          showtimes[x] = showtime
         }
 
-        showtimes = showtimes.reverse();
+        showtimes = showtimes.reverse()
         for (x in showtimes) {
-          movieData.showtimes.push(showtimes[x].trim());
+          movieData.showtimes.push(showtimes[x].trim())
         }
 
-        theaterData.movies.push(movieData);
-      });
+        theaterData.movies.push(movieData)
+      })
 
-      theaters.push(theaterData);
-    });
+      theaters.push(theaterData)
+    })
 
     // No pages to paginate, so return the theaters back.
-    if ($('#navbar td a:contains("Next")').length === 0 || page == self.pageLimit) {
-      cb(null, theaters);
-      return;
+    if ($('#navbar td a:contains("Next")').length === 0 || page === self.pageLimit) {
+      cb(null, theaters)
+      return
     }
 
     // Use the hidden API of getTheaters to pass in the next page and current
     // theaters.
-    self.getTheaters(cb, ++page, theaters);
-  });
-};
+    self.getTheaters(cb, ++page, theaters)
+  })
+}
 
 /**
  * @param {function} cb - Callback to handle the resulting theaters.
@@ -245,23 +244,23 @@ Showtimes.prototype.getTheaters = function (cb) {
  * @returns {object}
  */
 Showtimes.prototype.getMovies = function (cb) {
-  var self = this;
-  var page = 1;
-  var movies = [];
+  var self = this
+  var page = 1
+  var movies = []
 
   if (arguments.length > 1) {
-    page = arguments[1];
-    movies = arguments[2];
+    page = arguments[1]
+    movies = arguments[2]
   }
 
-  if (typeof self.pageLimit === 'undefined'){
-    self.pageLimit = 999;
+  if (typeof self.pageLimit === 'undefined') {
+    self.pageLimit = 999
   }
 
   var options = {
     url: self.baseUrl,
     qs: {
-      hl: (typeof self.lang !== 'undefined') ? self.lang : "en",
+      hl: (typeof self.lang !== 'undefined') ? self.lang : 'en',
       near: self.location,
       date: (typeof self.date !== 'undefined') ? self.date : 0,
       start: ((page - 1) * 10),
@@ -272,102 +271,103 @@ Showtimes.prototype.getMovies = function (cb) {
       'gzip': true
     },
     encoding: 'binary'
-  };
+  }
 
   request(options, function (error, response, body) {
     if (error || response.statusCode !== 200) {
       if (error === null) {
-        cb('Unknown error occured while querying theater data from Google Movies.');
+        cb('Unknown error occured while querying theater data from Google Movies.')
       } else {
-        cb(error);
+        cb(error)
       }
 
-      return;
+      return
     }
 
-    if (self.lang == 'tr') {
-      body = iconv.decode(body,'latin5');
+    if (self.lang === 'tr') {
+      body = iconv.decode(body, 'latin5')
     }
 
-    var $ = cheerio.load(body);
+    var $ = cheerio.load(body)
 
-    var cloakedUrl;
-    var genre;
-    var imdb;
-    var info;
-    var match;
-    var meridiem;
-    var movieId;
-    var rating;
-    var runtime;
-    var showtime;
-    var showtimes;
-    var theaterId;
-    var theaterData;
-    var trailer;
+    var cloakedUrl
+    var genre
+    var imdb
+    var info
+    var match
+    var meridiem
+    var movieId
+    var rating
+    var runtime
+    var showtime
+    var showtimes
+    var theaterId
+    var theaterData
+    var trailer
 
     if ($('.movie').length === 0) {
-      cb($('#results').text());
-      return;
+      cb($('#results').text())
+      return
     }
 
     $('.movie').each(function (i, movie) {
-      movie = $(movie);
+      movie = $(movie)
 
-      cloakedUrl = movie.find('.header .desc h2[itemprop=name] a').attr('href');
-      movieId = qs.parse(url.parse(cloakedUrl).query).mid;
+      cloakedUrl = movie.find('.header .desc h2[itemprop=name] a').attr('href')
+      movieId = qs.parse(url.parse(cloakedUrl).query).mid
 
       // Movie info format: RUNTIME - RATING - GENRE - TRAILER - IMDB
       // Some movies don't have a rating, trailer, or IMDb pages, so we need
       // to account for that.
-      var content = movie.find('.info').eq(-1).html();
-      content = content.replace('<br>', ' - ');
-      movie.find('.info').eq(-1).html(content);
-      info = movie.find('.info').eq(-1).text().split(' - ');
+      var content = movie.find('.info').eq(-1).html()
+      content = content.replace('<br>', ' - ')
+      movie.find('.info').eq(-1).html(content)
+      info = movie.find('.info').eq(-1).text().split(' - ')
 
       if (info[0].match(/(hr |min)/)) {
-        runtime = info[0].trim();
-        if(!info[1]){
-          info[1] = "";
+        runtime = info[0].trim()
+        if (!info[1]) {
+          info[1] = ''
         }
+
         if (info[1].match(/Rated/)) {
-          rating = info[1].replace(/Rated/, '').trim();
+          rating = info[1].replace(/Rated/, '').trim()
           if (typeof info[2] !== 'undefined') {
             if (info[2].match(/(IMDB|Trailer)/i)) {
-              genre = false;
+              genre = false
             } else {
-              genre = info[2].trim();
+              genre = info[2].trim()
             }
           } else {
-            genre = false;
+            genre = false
           }
         } else {
-          rating = false;
+          rating = false
 
           if (info[1].match(/(IMDB|Trailer)/i)) {
-            genre = false;
+            genre = false
           } else {
-            genre = info[1].trim();
+            genre = info[1].trim()
           }
         }
       } else {
-        runtime = false;
-        rating = false;
-        genre = info[0].trim();
+        runtime = false
+        rating = false
+        genre = info[0].trim()
       }
 
       if (movie.find('.info a:contains("Trailer")').length) {
-        cloakedUrl = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href');
-        trailer = qs.parse(url.parse(cloakedUrl).query).q;
+        cloakedUrl = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href')
+        trailer = qs.parse(url.parse(cloakedUrl).query).q
       } else {
-        trailer = false;
+        trailer = false
       }
 
       if (movie.find('.info a:contains("IMDb")').length) {
-        cloakedUrl = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href');
-        imdb = qs.parse(url.parse(cloakedUrl).query).q;
+        cloakedUrl = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href')
+        imdb = qs.parse(url.parse(cloakedUrl).query).q
       } else {
-        imdb = false;
+        imdb = false
       }
 
       var movieData = {
@@ -379,80 +379,80 @@ Showtimes.prototype.getMovies = function (cb) {
         imdb: imdb,
         trailer: trailer,
         theaters: []
-      };
+      }
 
       // Remove non-ASCII characters.
       if (movieData.runtime) {
-        movieData.runtime = movieData.runtime.replace(/[^\x00-\x7F]/g, '').trim();
+        movieData.runtime = movieData.runtime.replace(/[^\x00-\x7F]/g, '').trim()
       }
 
       if (movieData.rating) {
-        movieData.rating = movieData.rating.replace(/[^\x00-\x7F]/g, '').trim();
+        movieData.rating = movieData.rating.replace(/[^\x00-\x7F]/g, '').trim()
       }
 
       if (movieData.genre) {
-        movieData.genre = movieData.genre.replace(/[^\x00-\x7F]/g, '').trim();
+        movieData.genre = movieData.genre.replace(/[^\x00-\x7F]/g, '').trim()
       }
 
       movie.find('.showtimes .theater').each(function (j, theater) {
-        theater = $(theater);
+        theater = $(theater)
 
-        cloakedUrl = theater.find('.name a').attr('href');
-        theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : '';
+        cloakedUrl = theater.find('.name a').attr('href')
+        theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : ''
 
         theaterData = {
           id: theaterId,
           name: theater.find('.name').text(),
           address: theater.find('.address').text(),
           showtimes: []
-        };
+        }
 
-        showtimes = theater.find('.times').text().split(' ');
-        meridiem = false;
+        showtimes = theater.find('.times').text().split(' ')
+        meridiem = false
 
-        showtimes = showtimes.reverse();
+        showtimes = showtimes.reverse()
         for (var x in showtimes) {
           // Remove non-ASCII characters.
-          showtime = showtimes[x].replace(/[^\x00-\x7F]/g, '').trim();
-          match = showtime.match(/(am|pm)/);
+          showtime = showtimes[x].replace(/[^\x00-\x7F]/g, '').trim()
+          match = showtime.match(/(am|pm)/)
           if (match) {
-            meridiem = match[0];
+            meridiem = match[0]
           } else if (meridiem) {
-            showtime += meridiem;
+            showtime += meridiem
           }
 
-          showtimes[x] = showtime;
+          showtimes[x] = showtime
         }
 
-        showtimes = showtimes.reverse();
+        showtimes = showtimes.reverse()
         for (x in showtimes) {
-          theaterData.showtimes.push(showtimes[x].trim());
+          theaterData.showtimes.push(showtimes[x].trim())
         }
 
-        movieData.theaters.push(theaterData);
-      });
+        movieData.theaters.push(theaterData)
+      })
 
-      movies.push(movieData);
-    });
+      movies.push(movieData)
+    })
 
     // No pages to paginate, so return the movies back.
-    if ($('#navbar td a:contains("Next")').length === 0 || page == self.pageLimit) {
-      cb(null, movies);
-      return;
+    if ($('#navbar td a:contains("Next")').length === 0 || page === self.pageLimit) {
+      cb(null, movies)
+      return
     }
 
     // Use the hidden API of getMovies to pass in the next page and current
     // movies.
-    self.getMovies(cb, ++page, movies);
-  });
-};
+    self.getMovies(cb, ++page, movies)
+  })
+}
 
 /**
  * @param {function} cb - Callback to handle the resulting movie object.
  * @returns {object}
  */
 Showtimes.prototype.getMovie = function (mid, cb) {
-  var self = this;
+  var self = this
 
   var options = {
     url: self.baseUrl,
@@ -464,43 +464,44 @@ Showtimes.prototype.getMovie = function (mid, cb) {
     headers: {
       'User-Agent': self.userAgent
     }
-  };
-  request(options, function (error, response, body) {
+  }
 
+  request(options, function (error, response, body) {
     if (error || response.statusCode !== 200) {
       if (error === null) {
-        cb('Unknown error occured while querying theater data from Google Movies.');
+        cb('Unknown error occured while querying theater data from Google Movies.')
       } else {
-        cb(error);
+        cb(error)
       }
 
-      return;
+      return
     }
-    var $ = cheerio.load(body);
 
-    var cloakedUrl;
-    var genre;
-    var imdb;
-    var rating;
-    var runtime;
-    var trailer;
-    var director;
-    var cast;
-    var description;
-    var info;
-    var match;
-    var meridiem;
-    var showtime;
-    var showtimes;
-    var theaterId;
-    var theaterData;
+    var $ = cheerio.load(body)
+
+    var cloakedUrl
+    var genre
+    var imdb
+    var rating
+    var runtime
+    var trailer
+    var director
+    var cast
+    var description
+    var info
+    var match
+    var meridiem
+    var showtime
+    var showtimes
+    var theaterId
+    var theaterData
 
     if (!$('.showtimes')) {
-      cb($('#results'));
-      return;
+      cb($('#results'))
+      return
     }
 
-    var movie = $('.movie');
+    var movie = $('.movie')
 
     // Movie info format: RUNTIME - RATING - GENRE - TRAILER - IMDB
     // Some movies don't have a rating, trailer, or IMDb pages, so we need
@@ -508,66 +509,66 @@ Showtimes.prototype.getMovie = function (mid, cb) {
     // There is a br dividing the info from the director and actor info. Replacing it with
     // a new line makes it easier to split
 
-    movie.find('.desc .info').not('.info.links').find('> br').replaceWith('\n');
-    var infoArray = movie.find('.desc .info').not('.info.links').text().split('\n');
-    info = infoArray[0].split(' - ');
+    movie.find('.desc .info').not('.info.links').find('> br').replaceWith('\n')
+    var infoArray = movie.find('.desc .info').not('.info.links').text().split('\n')
+    info = infoArray[0].split(' - ')
     if (info[0].match(/(hr |min)/)) {
-      runtime = info[0].trim();
+      runtime = info[0].trim()
       if (info[1].match(/Rated/)) {
-        rating = info[1].replace(/Rated/, '').trim();
+        rating = info[1].replace(/Rated/, '').trim()
         if (typeof info[2] !== 'undefined') {
           if (info[2].match(/(IMDB|Trailer)/i)) {
-            genre = false;
+            genre = false
           } else {
-            genre = info[2].trim();
+            genre = info[2].trim()
           }
         } else {
-          genre = false;
+          genre = false
         }
       } else {
-        rating = false;
+        rating = false
 
         if (info[1].match(/(IMDB|Trailer)/i)) {
-          genre = false;
+          genre = false
         } else {
-          genre = info[1].trim();
+          genre = info[1].trim()
         }
       }
     } else {
-      runtime = false;
-      rating = false;
-      genre = info[0].trim();
+      runtime = false
+      rating = false
+      genre = info[0].trim()
     }
 
-    info = infoArray[1] ? infoArray[1].split(' - ') : undefined;
+    info = infoArray[1] ? infoArray[1].split(' - ') : undefined
     if (info) {
       if (info[0].match(/Director:/)) {
-        director = info[0].replace(/Director:/, '').trim();
+        director = info[0].replace(/Director:/, '').trim()
       }
       if (info[1].match(/Cast:/)) {
-        cast = info[1].replace(/Cast:/, '').trim().split(', ');
+        cast = info[1].replace(/Cast:/, '').trim().split(', ')
       }
     }
 
     // Longer descriptions can be split between two spans and displays a more/less link
-    description = movie.find('span[itemprop="description"]').text();
-    movie.find('#SynopsisSecond0').children().last().remove();
-    description = description + movie.find('#SynopsisSecond0').text();
-    description.replace('/"/', '');
-    description = description.trim();
+    description = movie.find('span[itemprop="description"]').text()
+    movie.find('#SynopsisSecond0').children().last().remove()
+    description = description + movie.find('#SynopsisSecond0').text()
+    description.replace('/"/', '')
+    description = description.trim()
 
     if (movie.find('.info.links a:contains("Trailer")').length) {
-      cloakedUrl = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href');
-      trailer = qs.parse(url.parse(cloakedUrl).query).q;
+      cloakedUrl = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href')
+      trailer = qs.parse(url.parse(cloakedUrl).query).q
     } else {
-      trailer = false;
+      trailer = false
     }
 
     if (movie.find('.info.links a:contains("IMDb")').length) {
-      cloakedUrl = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href');
-      imdb = qs.parse(url.parse(cloakedUrl).query).q;
+      cloakedUrl = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href')
+      imdb = qs.parse(url.parse(cloakedUrl).query).q
     } else {
-      imdb = false;
+      imdb = false
     }
 
     var movieData = {
@@ -582,65 +583,64 @@ Showtimes.prototype.getMovie = function (mid, cb) {
       cast: cast,
       description: description,
       theaters: []
-    };
+    }
 
     // Remove non-ASCII characters.
     if (movieData.runtime) {
-      movieData.runtime = movieData.runtime.replace(/[^\x00-\x7F]/g, '').trim();
+      movieData.runtime = movieData.runtime.replace(/[^\x00-\x7F]/g, '').trim()
     }
 
     if (movieData.rating) {
-      movieData.rating = movieData.rating.replace(/[^\x00-\x7F]/g, '').trim();
+      movieData.rating = movieData.rating.replace(/[^\x00-\x7F]/g, '').trim()
     }
 
     if (movieData.genre) {
-      movieData.genre = movieData.genre.replace(/[^\x00-\x7F]/g, '').trim();
+      movieData.genre = movieData.genre.replace(/[^\x00-\x7F]/g, '').trim()
     }
 
-
     $('.theater').each(function (i, theater) {
-      theater = $(theater);
-      cloakedUrl = theater.find('.name a').attr('href');
-      theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : '';
+      theater = $(theater)
+      cloakedUrl = theater.find('.name a').attr('href')
+      theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : ''
 
       theaterData = {
         id: theaterId,
         name: theater.find('.name').text(),
         address: theater.find('.address').text(),
         showtimes: []
-      };
+      }
 
       // Google displays showtimes like "10:00  11:20am  1:00  2:20  4:00  5:10  6:50  8:10  9:40  10:55pm". Since
       // they don't always apply am/pm to times, we need to run through the showtimes in reverse and then apply the
       // previous (later) meridiem to the next (earlier) movie showtime so we end up with something like
       // ["10:00am", "11:20am", "1:00pm", ...].
-      showtimes = theater.find('.times').text().split(' ');
-      meridiem = false;
+      showtimes = theater.find('.times').text().split(' ')
+      meridiem = false
 
-      showtimes = showtimes.reverse();
+      showtimes = showtimes.reverse()
       for (var x in showtimes) {
         // Remove non-ASCII characters.
-        showtime = showtimes[x].replace(/[^\x00-\x7F]/g, '').trim();
-        match = showtime.match(/(am|pm)/);
+        showtime = showtimes[x].replace(/[^\x00-\x7F]/g, '').trim()
+        match = showtime.match(/(am|pm)/)
         if (match) {
-          meridiem = match[0];
+          meridiem = match[0]
         } else {
-          showtime += meridiem;
+          showtime += meridiem
         }
 
-        showtimes[x] = showtime;
+        showtimes[x] = showtime
       }
 
-      showtimes = showtimes.reverse();
+      showtimes = showtimes.reverse()
       for (x in showtimes) {
-        theaterData.showtimes.push(showtimes[x].trim());
+        theaterData.showtimes.push(showtimes[x].trim())
       }
-      movieData.theaters.push(theaterData);
-    });
+      movieData.theaters.push(theaterData)
+    })
 
-    cb(null, movieData);
-    return;
-  });
-};
+    cb(null, movieData)
+    return
+  })
+}
 
-module.exports = Showtimes;
+module.exports = Showtimes
