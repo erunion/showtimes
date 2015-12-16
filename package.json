@@ -5,6 +5,12 @@
     "name": "Jon Ursenbach",
     "email": "jon@ursenba.ch"
   },
+  "contributors": [
+    "Christopher Truman (https://github.com/jstart)",
+    "Josh Goodwin (https://github.com/jclgoodwin)",
+    "Berkay Sargın (https://github.com/berkaey)",
+    "Christian Torres (https://github.com/chrux)"
+  ],
   "description": "a movie showtimes API",
   "keywords": [
     "movie",
