@@ -25,10 +25,10 @@
     "url": "https://github.com/erunion/showtimes/issues",
     "email": "jon@ursenba.ch"
   },
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "tap test/",
-    "lint": "standard index.js test/**.js"
+    "lint": "standard src/**.js test/**.js"
   },
   "dependencies": {
     "cheerio": "^0.18.0",
