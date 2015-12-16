@@ -239,6 +239,215 @@ Showtimes.prototype.getTheaters = function (cb) {
 };
 
 /**
+ * @param {function} cb - Callback to handle the resulting theaters.
+ * @param {number=} [page=1] - Page to pull theaters from. Hidden API and used during pagination.
+ * @param {object=} [theaters=[]] - Current theaters object. Hidden API and used during pagination.
+ * @returns {object}
+ */
+Showtimes.prototype.getMovies = function (cb) {
+  var self = this;
+  var page = 1;
+  var movies = [];
+
+  if (arguments.length > 1) {
+    page = arguments[1];
+    movies = arguments[2];
+  }
+
+  if (typeof self.pageLimit === 'undefined'){
+    self.pageLimit = 999;
+  }
+
+  var options = {
+    url: self.baseUrl,
+    qs: {
+      hl: (typeof self.lang !== 'undefined') ? self.lang : "en",
+      near: self.location,
+      date: (typeof self.date !== 'undefined') ? self.date : 0,
+      start: ((page - 1) * 10),
+      sort: 1
+    },
+    headers: {
+      'User-Agent': self.userAgent,
+      'gzip': true
+    },
+    encoding: 'binary'
+  };
+
+  request(options, function (error, response, body) {
+    if (error || response.statusCode !== 200) {
+      if (error === null) {
+        cb('Unknown error occured while querying theater data from Google Movies.');
+      } else {
+        cb(error);
+      }
+
+      return;
+    }
+
+    if (self.lang == 'tr') {
+      body = iconv.decode(body,'latin5');
+    }
+    
+    var $ = cheerio.load(body);
+
+    var cloakedUrl;
+    var genre;
+    var imdb;
+    var info;
+    var match;
+    var meridiem;
+    var movieId;
+    var rating;
+    var runtime;
+    var showtime;
+    var showtimes;
+    var theaterId;
+    var theaterData;
+    var trailer;
+
+    if ($('.movie').length === 0) {
+      cb($('#results').text());
+      return;
+    }
+
+    $('.movie').each(function (i, movie) {
+      movie = $(movie);
+
+      cloakedUrl = movie.find('.header .desc h2[itemprop=name] a').attr('href');
+      movieId = qs.parse(url.parse(cloakedUrl).query).mid;
+
+      // Movie info format: RUNTIME - RATING - GENRE - TRAILER - IMDB
+      // Some movies don't have a rating, trailer, or IMDb pages, so we need
+      // to account for that.
+      var content = movie.find('.info').eq(-1).html();
+      content = content.replace('<br>', ' - ');
+      movie.find('.info').eq(-1).html(content);
+      info = movie.find('.info').eq(-1).text().split(' - ');
+
+      if (info[0].match(/(hr |min)/)) {
+        runtime = info[0].trim();
+        if(!info[1]){
+          info[1] = "";
+        }
+        if (info[1].match(/Rated/)) {
+          rating = info[1].replace(/Rated/, '').trim();
+          if (typeof info[2] !== 'undefined') {
+            if (info[2].match(/(IMDB|Trailer)/i)) {
+              genre = false;
+            } else {
+              genre = info[2].trim();
+            }
+          } else {
+            genre = false;
+          }
+        } else {
+          rating = false;
+
+          if (info[1].match(/(IMDB|Trailer)/i)) {
+            genre = false;
+          } else {
+            genre = info[1].trim();
+          }
+        }
+      } else {
+        runtime = false;
+        rating = false;
+        genre = info[0].trim();
+      }
+
+      if (movie.find('.info a:contains("Trailer")').length) {
+        cloakedUrl = 'https://google.com' + movie.find('.info a:contains("Trailer")').attr('href');
+        trailer = qs.parse(url.parse(cloakedUrl).query).q;
+      } else {
+        trailer = false;
+      }
+
+      if (movie.find('.info a:contains("IMDb")').length) {
+        cloakedUrl = 'https://google.com' + movie.find('.info a:contains("IMDb")').attr('href');
+        imdb = qs.parse(url.parse(cloakedUrl).query).q;
+      } else {
+        imdb = false;
+      }
+
+      var movieData = {
+        id: movieId,
+        name: movie.find('h2[itemprop=name]').text(),
+        runtime: runtime,
+        rating: rating,
+        genre: genre,
+        imdb: imdb,
+        trailer: trailer,
+        theaters: []
+      };
+
+      // Remove non-ASCII characters.
+      if (movieData.runtime) {
+        movieData.runtime = movieData.runtime.replace(/[^\x00-\x7F]/g, '').trim();
+      }
+
+      if (movieData.rating) {
+        movieData.rating = movieData.rating.replace(/[^\x00-\x7F]/g, '').trim();
+      }
+
+      if (movieData.genre) {
+        movieData.genre = movieData.genre.replace(/[^\x00-\x7F]/g, '').trim();
+      }
+
+      movie.find('.showtimes .theater').each(function (j, theater) {
+        theater = $(theater);
+        
+        cloakedUrl = theater.find('.name a').attr('href');
+        theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : '';
+
+        theaterData = {
+          id: theaterId,
+          name: theater.find('.name').text(),
+          address: theater.find('.address').text(),
+          showtimes: []
+        };
+
+        showtimes = theater.find('.times').text().split(' ');
+        meridiem = false;
+
+        showtimes = showtimes.reverse();
+        for (var x in showtimes) {
+          // Remove non-ASCII characters.
+          showtime = showtimes[x].replace(/[^\x00-\x7F]/g, '').trim();
+          match = showtime.match(/(am|pm)/);
+          if (match) {
+            meridiem = match[0];
+          } else if (meridiem) {
+            showtime += meridiem;
+          }
+
+          showtimes[x] = showtime;
+        }
+
+        showtimes = showtimes.reverse();
+        for (x in showtimes) {
+          theaterData.showtimes.push(showtimes[x].trim());
+        }
+
+        movieData.theaters.push(theaterData);
+      });
+
+      movies.push(movieData);
+    });
+
+    // No pages to paginate, so return the movies back.
+    if ($('#navbar td a:contains("Next")').length === 0 || page == self.pageLimit) {
+      cb(null, movies);
+      return;
+    }
+
+    // Use the hidden API of getMovies to pass in the next page and current
+    // movies.
+    self.getMovies(cb, ++page, movies);
+  });
+};
+
+/**
  * @param {function} cb - Callback to handle the resulting movie object.
  * @returns {object}
  */
