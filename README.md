@@ -1,6 +1,6 @@
 # Showtimes · a movie showtimes API
 [![NPM](http://img.shields.io/npm/v/showtimes.svg?style=flat)](https://www.npmjs.org/package/showtimes)
-[![Travis CI](http://img.shields.io/travis/jonursenbach/showtimes.svg?style=flat)](https://travis-ci.org/jonursenbach/showtimes)
+[![Travis CI](http://img.shields.io/travis/erunion/showtimes.svg?style=flat)](https://travis-ci.org/erunion/showtimes)
 
 ## Installation
 ```
@@ -77,6 +77,6 @@ s.getMovies(function (err, movies) {
   * `date` - number of days in the future you want to pull showtimes for (ex. on june 9, 2014, pulling showtimes for july 29 you'd pass in "50").
   * `lang` - language of the response, this will localize the movie names, times, etc. (ex. "en" (default) or "tr" for Turkish data)
   * `pageLimit` - page limit for request. (by default returns all pages)
-  
+
 ### `Showtimes.getTheaters(callback)`
 Callback to handle your theater showtime data. Is passed a single argument of theaters.

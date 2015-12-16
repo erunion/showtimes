@@ -15,7 +15,7 @@ function Showtimes(location, options) {
     return new Showtimes(location, options);
   }
 
-  this.userAgent = 'showtimes (http://github.com/jonursenbach/showtimes)';
+  this.userAgent = 'showtimes (http://github.com/erunion/showtimes)';
   this.baseUrl = 'http://google.com/movies';
   this.location = location;
 
@@ -76,7 +76,7 @@ Showtimes.prototype.getTheaters = function (cb) {
     if (self.lang == 'tr') {
       body = iconv.decode(body,'latin5');
     }
-    
+
     var $ = cheerio.load(body);
 
     var cloakedUrl;
@@ -288,7 +288,7 @@ Showtimes.prototype.getMovies = function (cb) {
     if (self.lang == 'tr') {
       body = iconv.decode(body,'latin5');
     }
-    
+
     var $ = cheerio.load(body);
 
     var cloakedUrl;
@@ -396,7 +396,7 @@ Showtimes.prototype.getMovies = function (cb) {
 
       movie.find('.showtimes .theater').each(function (j, theater) {
         theater = $(theater);
-        
+
         cloakedUrl = theater.find('.name a').attr('href');
         theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : '';
 

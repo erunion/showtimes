@@ -19,10 +19,10 @@
   "licenses": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jonursenbach/showtimes.git"
+    "url": "https://github.com/erunion/showtimes.git"
   },
   "bugs": {
-    "url": "https://github.com/jonursenbach/showtimes/issues",
+    "url": "https://github.com/erunion/showtimes/issues",
     "email": "jon@ursenba.ch"
   },
   "dependencies": {
