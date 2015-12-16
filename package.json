@@ -28,7 +28,7 @@
   "main": "index.js",
   "scripts": {
     "test": "tap test/",
-    "lint": "eslint index.js test/**.js"
+    "lint": "standard index.js test/**.js"
   },
   "dependencies": {
     "cheerio": "^0.18.0",
@@ -36,7 +36,6 @@
     "request": "^2.51.0"
   },
   "devDependencies": {
-    "eslint": "^0.13.0",
     "tap": "^0.5.0"
   }
 }
