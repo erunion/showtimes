@@ -1,5 +1,6 @@
-var showtimes = require('../')
+var showtimes = require('../src/index.js')
 var test = require('tap').test
+var moment = require('moment')
 var s = null
 
 test('no movies available for a date far in the future', function (t) {
@@ -7,8 +8,9 @@ test('no movies available for a date far in the future', function (t) {
     date: 200
   })
 
-  s.getTheaters(function (err) {
-    t.type(err, 'string')
+  s.getMovies(function (err) {
+    var futureDate = moment().add(200, 'days').format('MMM D')
+    t.equal(err, 'No showtimes were found on ' + futureDate + '.Please select a different date.')
     t.end()
   })
 })
