@@ -32,7 +32,7 @@ api.getTheaters(function (error, theaters) {
          name: 'Star Wars: The Force Awakens 3D',
          runtime: '2hr 16min',
          rating: 'PG-13',
-         genre: ['Scifi', 'Fantasy'],
+         genre: 'Scifi/Fantasy',
          imdb: 'http://www.youtube.com/watch?v=tt08BH9COsI',
          trailer: 'http://www.imdb.com/title/tt2488496/',
          showtimes: [ '9:30am', '1:00pm', '4:30pm', '8:00pm' ] },
@@ -40,7 +40,7 @@ api.getTheaters(function (error, theaters) {
          name: 'Star Wars: The Force Awakens',
          runtime: '2hr 16min',
          rating: 'PG-13',
-         genre: ['Scifi', 'Fantasy'],
+         genre: 'Scifi/Fantasy',
          imdb: 'http://www.youtube.com/watch?v=tt08BH9COsI',
          trailer: 'http://www.imdb.com/title/tt2488496/',
          showtimes: [ '10:00am', '1:30pm', '5:00pm', '8:30pm' ] } ] },
@@ -53,7 +53,7 @@ api.getTheaters(function (error, theaters) {
          name: 'Star Wars: The Force Awakens 3D',
          runtime: '2hr 16min',
          rating: 'PG-13',
-         genre: ['Scifi', 'Fantasy'],
+         genre: 'Scifi/Fantasy',
          imdb: 'http://www.youtube.com/watch?v=tt08BH9COsI',
          trailer: 'http://www.imdb.com/title/tt2488496/',
          showtimes:
@@ -121,7 +121,7 @@ api.getTheaters(function (error, theaters) {
   name: 'Star Wars: The Force Awakens 3D',
   runtime: '2hr 16min',
   rating: 'PG-13',
-  genre: ['Scifi', 'Fantasy'],
+  genre: 'Scifi/Fantasy',
   imdb: 'http://www.youtube.com/watch?v=tt08BH9COsI',
   trailer: 'http://www.imdb.com/title/tt2488496/',
   director: 'J.J. Abrams',
@@ -135,3 +135,11 @@ api.getTheaters(function (error, theaters) {
 * `director`, `cast`, `description`, and `theaters` are only available from `getMovies` and `getMovie()`
 * `showtimes` is only available from `getTheaters()`.
 * `genre`, `rating`, `runtime`, `imdb`, and `trailer` are all optional, and not always present on every movie.
+
+## Upgrading to v2
+With v2, I've moved the entire library over to be written in ES6 so components can be easily reused with having the
+library internals be a proper class. Unfortunately, this has made v2 incompatibe with v1, but thankfully only a few
+minor things have changed with the API.
+
+1. Instead of calling the library as `s = Showtimes(location)`, you must now instantiate the class with `s = new Showtimes(location)`.
+2. The `genre` response that comes back from API calls is now represented as an array instead of a compounded string.
