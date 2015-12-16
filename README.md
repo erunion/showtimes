@@ -9,75 +9,129 @@ npm install showtimes --save
 ```
 
 ## Usage
-```javascript
-var showtimes = require('showtimes');
-var s = showtimes(90504, {});
+```
+var Showtimes = require('showtimes');
+var api = new Showtimes(10001, {});
 
-s.getTheaters(function (err, theaters) {
+api.getTheaters(function (error, theaters) {
+  if (error) {
+    throw error
+  }
+
   console.log(theaters);
-});
-
-s.getMovies(function (err, movies) {
-  console.log(movies);
 });
 ```
 
-```javascript
-[ { id: '1441318e8d47fc1b',
-    name: 'Vogue Theatre',
-    address: '3290 Sacramento Street, San Francisco, CA',
-    phoneNumber: '(415) 346-2228',
+```
+[ { id: '4c9f211a0800ff36',
+    name: 'AMC Loews 34th Street 14',
+    address: '312 W. 34th St., New York, NY',
+    phoneNumber: '(888) 262-4386',
     movies:
-     [ { id: 'c30e28c6168184d9',
-         name: 'Maleficent',
-         runtime: '‎1hr 37min‎‎',
-         rating: 'PG‎‎',
-         genre: 'Action/Adventure‎',
-         imdb: 'http://www.imdb.com/title/tt1587310/',
-         trailer: 'http://www.youtube.com/watch?v=CelenfcEszk',
-         showtimes: [ '‎2:45‎pm', '‎7:15pm‎'] },
-       { id: 'd64ac30103cb0ea6',
-         name: 'Maleficent 3D',
-         runtime: '‎1hr 37min‎‎',
-         rating: 'PG‎‎',
-         genre: 'Action/Adventure‎',
-         imdb: 'http://www.imdb.com/title/tt1587310/',
-         trailer: 'http://www.youtube.com/watch?v=CelenfcEszk',
-         showtimes: [ '‎5:00pm‎'] }
-     ] },
-  { id: '87f533be471c287d',
-    name: '4-Star Theatre',
-    address: '2200 Clement Street, San Francisco, CA',
-    phoneNumber: '(415) 666-3488',
+     [ { id: 'cfbfd1f634e7638a',
+         name: 'Star Wars: The Force Awakens 3D',
+         runtime: '2hr 16min',
+         rating: 'PG-13',
+         genre: 'Scifi/Fantasy',
+         imdb: 'http://www.youtube.com/watch?v=tt08BH9COsI',
+         trailer: 'http://www.imdb.com/title/tt2488496/',
+         showtimes: [ '9:30am', '1:00pm', '4:30pm', '8:00pm' ] },
+       { id: '89d9737d67580511',
+         name: 'Star Wars: The Force Awakens',
+         runtime: '2hr 16min',
+         rating: 'PG-13',
+         genre: 'Scifi/Fantasy',
+         imdb: 'http://www.youtube.com/watch?v=tt08BH9COsI',
+         trailer: 'http://www.imdb.com/title/tt2488496/',
+         showtimes: [ '10:00am', '1:30pm', '5:00pm', '8:30pm' ] } ] },
+  { id: '7a9fd407207f4951',
+    name: 'Bow Tie Chelsea Cinemas',
+    address: '260 West 23rd Street, New York, NY',
+    phoneNumber: '(212) 691-4744',
     movies:
-     [ { id: 'e1e16ce6a6cedf0e',
-         name: 'A Million Ways to Die in the West',
-         runtime: '‎1hr 56min‎‎',
-         rating: 'R‎‎',
-         genre: 'Comedy/Western‎',
-         imdb: 'http://www.imdb.com/title/tt2557490/',
-         trailer: 'http://www.youtube.com/watch?v=__7EUx3J9Tg',
-         showtimes: [ '‎1:15‎pm', '‎3:40‎pm', '‎6:10‎pm', '‎8:35pm‎'] },
-       { id: 'a844a5649d116a42',
-         name: 'Edge of Tomorrow',
-         runtime: '‎1hr 53min‎‎',
-         rating: 'PG-13‎‎',
-         genre: 'Drama‎',
-         imdb: 'http://www.imdb.com/title/tt1631867/',
-         trailer: 'http://www.youtube.com/watch?v=ER8hMnxSUOg',
-         showtimes: [ '‎1:20‎pm', '‎3:45‎pm', '‎6:10‎pm', '‎8:35pm‎'] }
-     ] },
+     [ { id: 'cfbfd1f634e7638a',
+         name: 'Star Wars: The Force Awakens 3D',
+         runtime: '2hr 16min',
+         rating: 'PG-13',
+         genre: 'Scifi/Fantasy',
+         imdb: 'http://www.youtube.com/watch?v=tt08BH9COsI',
+         trailer: 'http://www.imdb.com/title/tt2488496/',
+         showtimes:
+          [ '5:20am',
+            '10:00am',
+            '10:30am',
+            '1:05pm',
+            '1:35pm',
+            '4:10pm',
+            '4:40pm',
+            '7:20pm',
+            '7:50pm',
+            '10:30pm',
+            '11:00pm' ] }] }
   ...
 ]
 ```
 
-## API
-### `Showtimes(location, options)`
-* `location` - location you want to pull showtimes for. can be either a zipcode, latitude and Longitude, or a full address.
+## Documentation
+### API
+#### `showtimes(location, options)`
+* `location` &mdash; The location you want to pull showtimes for. This can be either a zipcode, latitude and Longitude, or a full address.
 * `options`
-  * `date` - number of days in the future you want to pull showtimes for (ex. on june 9, 2014, pulling showtimes for july 29 you'd pass in "50").
-  * `lang` - language of the response, this will localize the movie names, times, etc. (ex. "en" (default) or "tr" for Turkish data)
-  * `pageLimit` - page limit for request. (by default returns all pages)
+  * `date` &mdash; Number of days in the future you want to pull showtimes for. (ex. on june 9, 2014, pulling showtimes for july 29 you'd pass in "50")
+  * `lang` &mdash; Language of the response, this will localize the movie names, times, etc. (ex. "en" (default) or "tr" for Turkish data)
+  * `pageLimit` &mdash; Page limit for request. By default, this returns allm (999) pages.
 
-### `Showtimes.getTheaters(callback)`
-Callback to handle your theater showtime data. Is passed a single argument of theaters.
+#### `showtimes.getTheaters(callback)`
+* `callback` &mdash; Callback function to run after generating a standardized response of theaters.
+  * `error` &mdash; Any error messages that were found when doing a query. Null if all is good.
+  * `theaters` &mdash; Standardized response of theaters.
+
+#### `showtimes.getMovies(callback)`
+* `callback` &mdash; Callback function to run after generating a standardized response of movies.
+  * `error` &mdash; Any error messages that were found when doing a query. Null if all is good.
+  * `theaters` &mdash; Standardized response of theaters.
+
+#### `showtimes.getMovie(movieId, callback)`
+* `movieId` &mdash; Movie ID for the movie you want to query. You can get this from a `getTheaters()` or `getMovies()` response.
+* `callback` &mdash; Callback function to run after generating a standardized movie response.
+  * `error` &mdash; Any error messages that were found when doing a query. Null if all is good.
+  * `theaters` &mdash; Standardized response for the movie.
+
+### Standardized Responses
+#### Theater
+```
+{
+  id: '4c9f211a0800ff36',
+  name: 'AMC Loews 34th Street 14',
+  address: '312 W. 34th St., New York, NY',
+  phoneNumber: '(888) 262-4386',
+  movies: [<movies>],
+  showtimes: ['9:30am', '1:00pm', '4:30pm', '8:00pm']
+}
+```
+
+* `phoneNumber` and `movies` are only available on `getTheaters()`.
+* `showtimes` is only available through `getMovies()` or `getMovie()`.
+* `address` and `phoneNumber` are all optional, and not always present for every theater.
+
+#### Movie
+```
+{
+  id: 'cfbfd1f634e7638a',
+  name: 'Star Wars: The Force Awakens 3D',
+  runtime: '2hr 16min',
+  rating: 'PG-13',
+  genre: 'Scifi/Fantasy',
+  imdb: 'http://www.youtube.com/watch?v=tt08BH9COsI',
+  trailer: 'http://www.imdb.com/title/tt2488496/',
+  director: 'J.J. Abrams',
+  cast: [<cast>]
+  description: 'In this continuation of the "Star Wars" saga, ... the former Rebel Alliance.',
+  theaters: [<theaters>],
+  showtimes: ['12:20pm', '3:40pm', '6:30pm', '7:00pm', '9:50pm', '10:20pm']
+}
+```
+
+* `director`, `cast`, `description`, and `theaters` are only available from `getMovies` and `getMovie()`
+* `showtimes` is only available from `getTheaters()`.
+* `genre`, `rating`, `runtime`, `imdb`, and `trailer` are all optional, and not always present on every movie.
