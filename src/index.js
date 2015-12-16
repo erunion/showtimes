@@ -258,7 +258,7 @@ class showtimes {
           if (info[2].match(/(IMDB|Trailer)/i)) {
             genre = false
           } else {
-            genre = info[2].trim()
+            genre = info[2].trim().split('/')
           }
         } else {
           genre = false
@@ -269,7 +269,7 @@ class showtimes {
         if (info[1].match(/(IMDB|Trailer)/i)) {
           genre = false
         } else {
-          genre = info[1].trim()
+          genre = info[1].trim().split('/')
         }
       }
     } else {
@@ -391,13 +391,21 @@ class showtimes {
   }
 
   /**
-   * Take in a string and return back a normalized string sans some non-ASCII characters that cause problems (like some
-   * Turkish letters).
-   * @param  {string} string
-   * @return {string}
+   * Take in a mixed object (string or array) and return back a normalized string sans some non-ASCII characters that
+   * cause problems (like some Turkish letters).
+   * @param  {mixed} thing
+   * @return {mixed}
    */
-  _removeNonAsciiCharacters (string) {
-    return string.replace(/[^\x00-\x7F]/g, '')
+  _removeNonAsciiCharacters (thing) {
+    if (typeof thing === 'object') {
+      for (let x in thing) {
+        thing[x] = thing[x].replace(/[^\x00-\x7F]/g, '')
+      }
+
+      return thing
+    }
+
+    return thing.replace(/[^\x00-\x7F]/g, '')
   }
 
   /**
