@@ -25,6 +25,11 @@
     "url": "https://github.com/erunion/showtimes/issues",
     "email": "jon@ursenba.ch"
   },
+  "main": "index.js",
+  "scripts": {
+    "test": "tap test/",
+    "lint": "eslint index.js test/**.js"
+  },
   "dependencies": {
     "cheerio": "^0.18.0",
     "iconv-lite": "^0.4.10",
@@ -33,13 +38,5 @@
   "devDependencies": {
     "eslint": "^0.13.0",
     "tap": "^0.5.0"
-  },
-  "main": "index.js",
-  "engines": {
-    "node": ">= 0.10.0"
-  },
-  "scripts": {
-    "test": "tap test/",
-    "lint": "eslint index.js test/**.js"
   }
 }
