@@ -71,6 +71,29 @@ class showtimes {
   }
 
   /**
+   * Parse and pull back a standardized object for a given movie.
+   * @param  {string}   theaterId  Theater ID for the theater you want to query. This can be obtained via getTheaters(), or
+   *                             getMovies()
+   * @param  {Function} cb       Callback function to run after generating a standardized object for this theater.
+   * @return {void}
+   */
+  getTheater (theaterId, cb) {
+    var api = this
+    this._request({tid: theaterId}, cb, (response) => {
+      var $ = cheerio.load(response)
+      if (!$('.showtimes')) {
+        cb($('#results').text())
+        return
+      }
+
+      var theater = $('.theater')
+      var theaterData = api._parseTheater($, theater, false, theaterId)
+
+      cb(null, theaterData)
+    })
+  }
+
+  /**
    * Parse and pull back an object of movies for the currently configured location and date.
    * @param  {Function} cb           Callback function to run after generating an object of movies.
    * @param  {number=}  [page=1]     Paginated page to pull movies from. Hidden API, and is only used internally.
@@ -164,19 +187,22 @@ class showtimes {
    *                             logic.
    * @return {object}            Standardized response for the parsed theater.
    */
-  _parseTheater ($, theater, alternate) {
+  _parseTheater ($, theater, alternate, theaterId) {
     alternate = (typeof alternate === 'undefined') ? false : alternate
 
     var api = this
 
-    var cloakedUrl
-    if (alternate) {
-      cloakedUrl = theater.find('.name a').attr('href')
-    } else {
-      cloakedUrl = theater.find('.desc h2.name a').attr('href')
+    if (typeof theaterId === 'undefined') {
+      var cloakedUrl
+      if (alternate) {
+        cloakedUrl = theater.find('.name a').attr('href')
+      } else {
+        cloakedUrl = theater.find('.desc h2.name a').attr('href')
+      }
+
+      theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : ''
     }
 
-    var theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : ''
     var info = theater.find('.desc .info').text().split(' - ')
 
     if (alternate) {
