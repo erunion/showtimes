@@ -29,13 +29,13 @@ class showtimes {
 
   /**
    * Parse and pull back an object of movie theaters for the currently configured location and date.
+   * @param  {string=}  query         Query string which works as a way to filter the theaters. 
    * @param  {Function} cb            Callback function to run after generating an object of theaters.
-   * @param  {string=}  query         Query string which works as a way to filter the theaters.
    * @param  {number=}  [page=1]      Paginated page to pull theaters from. Hidden API, and is only used internally.
    * @param  {object=}  [theaters=[]] Currently generated theaters. Hidden API, and is only used internally.
    * @return void
    */
-  getTheaters (cb, query) {
+  getTheaters (query, cb) {
     this.page = 1
     this.theaters = []
 
@@ -72,19 +72,19 @@ class showtimes {
       }
 
       // Use the hidden API of getTheaters to pass in the next page and current theaters.
-      api.getTheaters(cb, null, ++api.page, api.theaters)
+      api.getTheaters(query, cb, ++api.page, api.theaters)
     })
   }
 
   /**
    * Parse and pull back an object of movies for the currently configured location and date.
-   * @param  {Function} cb           Callback function to run after generating an object of movies.
    * @param  {string=}  query        Query string which works as a way to filter the movies.
+   * @param  {Function} cb           Callback function to run after generating an object of movies.
    * @param  {number=}  [page=1]     Paginated page to pull movies from. Hidden API, and is only used internally.
    * @param  {object=}  [movies=[]]  Currently generated movies. Hidden API, and is only used internally.
    * @return void
    */
-  getMovies (cb, query) {
+  getMovies (query, cb) {
     this.page = 1
     this.movies = []
 
@@ -132,7 +132,7 @@ class showtimes {
 
       // Use the hidden API of getMovies to pass in the next page and current
       // movies.
-      api.getMovies(cb, null, ++api.page, api.movies)
+      api.getMovies(query, cb, ++api.page, api.movies)
     })
   }
 
