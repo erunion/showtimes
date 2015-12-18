@@ -8,7 +8,7 @@ test('no movies available for a date far in the future', function (assert) {
     date: 200
   })
 
-  api.getMovies(null, function (err) {
+  api.getMovies(function (err) {
     var futureDate = moment().add(200, 'days').format('MMM D')
     assert.equal(err, 'No showtimes were found on ' + futureDate + '.Please select a different date.')
     assert.end()
@@ -17,7 +17,7 @@ test('no movies available for a date far in the future', function (assert) {
 
 test('get theaters from zipcode and get movie for first movie id', function (assert) {
   api = new Showtimes(90504)
-  api.getTheaters(null, function (err, theaters) {
+  api.getTheaters(function (err, theaters) {
     assert.equal(err, null)
     api.getMovie((theaters[0].movies[0].id), function (err2, movie) {
       assert.equal(err2, null)
@@ -29,7 +29,7 @@ test('get theaters from zipcode and get movie for first movie id', function (ass
 
 test('get movies from lat/long', function (assert) {
   api = new Showtimes('33.8358,-118.3406')
-  api.getMovies(null, function (err, movies) {
+  api.getMovies(function (err, movies) {
     assert.equal(err, null)
     assert.ok(movies.length > 1, 'more than one movie')
     assert.end()
@@ -38,7 +38,7 @@ test('get movies from lat/long', function (assert) {
 
 test('get movies from lat/long', function (assert) {
   api = new Showtimes('45.531531531531535,-122.61220863200342')
-  api.getMovies(null, function (err, movies) {
+  api.getMovies(function (err, movies) {
     assert.equal(err, null)
     assert.ok(movies.length > 1, 'more than one movie')
     assert.end()
@@ -47,7 +47,7 @@ test('get movies from lat/long', function (assert) {
 
 test('get movies from lat/long and get filtered movies for first movie name', function (assert) {
   api = new Showtimes('45.531531531531535,-122.61220863200342')
-  api.getMovies(null, function (err, movies) {
+  api.getMovies(function (err, movies) {
     assert.equal(err, null)
     api.getMovies(movies[0].name, function (err2, movies2) {
       assert.equal(err, null)
@@ -68,7 +68,7 @@ test('no movies available for query', function (assert) {
 
 test('get movies from lat/long and get filtered theaters for first movie name and see if match, they should not.', function (assert) {
   api = new Showtimes('45.531531531531535,-122.61220863200342')
-  api.getMovies(null, function (err, movies) {
+  api.getMovies(function (err, movies) {
     assert.equal(err, null)
     var query = movies[0].name
     api.getTheaters(query, function (err2, theaters) {

@@ -35,13 +35,17 @@ class showtimes {
    * @param  {object=}  [theaters=[]] Currently generated theaters. Hidden API, and is only used internally.
    * @return void
    */
-  getTheaters (query, cb) {
+  getTheaters () {
     this.page = 1
     this.theaters = []
 
-    if (arguments.length > 2) {
-      this.page = arguments[2]
-      this.theaters = arguments[3]
+    var query = (typeof arguments[0] !== 'function') ? arguments[0] : null
+    var cb = (typeof arguments[0] === 'function') ? arguments[0] : arguments[1]
+    var extraIdx = (typeof arguments[0] === 'function') ? 1 : 2
+
+    if (arguments.length > extraIdx) {
+      this.page = arguments[extraIdx]
+      this.theaters = arguments[extraIdx + 1]
     }
 
     var api = this
@@ -83,13 +87,17 @@ class showtimes {
    * @param  {object=}  [movies=[]]  Currently generated movies. Hidden API, and is only used internally.
    * @return void
    */
-  getMovies (query, cb) {
+  getMovies () {
     this.page = 1
     this.movies = []
 
-    if (arguments.length > 2) {
-      this.page = arguments[2]
-      this.movies = arguments[3]
+    var query = (typeof arguments[0] !== 'function') ? arguments[0] : null
+    var cb = (typeof arguments[0] === 'function') ? arguments[0] : arguments[1]
+    var extraIdx = (typeof arguments[0] === 'function') ? 1 : 2
+
+    if (arguments.length > extraIdx) {
+      this.page = arguments[extraIdx]
+      this.movies = arguments[extraIdx + 1]
     }
 
     var api = this
