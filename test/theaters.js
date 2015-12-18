@@ -1,6 +1,5 @@
 var Showtimes = require('../src/index.js')
 var test = require('tap').test
-var moment = require('moment')
 var api = null
 
 test('get theaters from zipcode', function (assert) {

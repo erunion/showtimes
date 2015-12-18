@@ -29,7 +29,7 @@ class showtimes {
 
   /**
    * Parse and pull back an object of movie theaters for the currently configured location and date.
-   * @param  {string=}  query         Query string which works as a way to filter the theaters. 
+   * @param  {string=}  query         Query string which works as a way to filter the theaters.
    * @param  {Function} cb            Callback function to run after generating an object of theaters.
    * @param  {number=}  [page=1]      Paginated page to pull theaters from. Hidden API, and is only used internally.
    * @param  {object=}  [theaters=[]] Currently generated theaters. Hidden API, and is only used internally.
@@ -45,7 +45,7 @@ class showtimes {
     }
 
     var api = this
-    this._request({q:query}, cb, (response) => {
+    this._request({q: query}, cb, (response) => {
       if (api.lang === 'tr') {
         response = iconv.decode(response, 'latin5')
       }
@@ -57,11 +57,10 @@ class showtimes {
       }
 
       $('.theater').each((i, theater) => {
-        var theaterData = api._parseTheater($, $(theater));
+        var theaterData = api._parseTheater($, $(theater))
         if (theaterData.name.length === 0) {
           return true
         }
-        
         api.theaters.push(theaterData)
       })
 
@@ -188,7 +187,7 @@ class showtimes {
     }
     // Get the Id from left links XD
     if (typeof cloakedUrl === 'undefined') {
-      cloakedUrl = $("#left_nav .section a").attr('href')
+      cloakedUrl = $('#left_nav .section a').attr('href')
     }
 
     var theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : ''
@@ -242,7 +241,7 @@ class showtimes {
       }
       // Get the Id from left links XD
       if (typeof cloakedUrl === 'undefined') {
-        cloakedUrl = $("#left_nav .section a").attr('href')
+        cloakedUrl = $('#left_nav .section a').attr('href')
       }
 
       movieId = qs.parse(url.parse(cloakedUrl).query).mid

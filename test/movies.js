@@ -9,7 +9,7 @@ test('no movies available for a date far in the future', function (assert) {
   })
 
   api.getMovies(function (err) {
-    var futureDate = moment().add(200-1, 'days').format('MMM D')
+    var futureDate = moment().add((200 - 1), 'days').format('MMM D')
     assert.equal(err, 'No showtimes were found on ' + futureDate + '.Please select a different date.')
     assert.end()
   })
