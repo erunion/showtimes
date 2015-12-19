@@ -198,7 +198,14 @@ class showtimes {
       cloakedUrl = $('#left_nav .section a').attr('href')
     }
 
-    var theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : ''
+    var theaterId = false
+    if (cloakedUrl) {
+      cloakedUrl = qs.parse(url.parse(cloakedUrl))
+      if (typeof cloakedUrl.tid !== 'undefined') {
+        theaterId = cloakedUrl.tid
+      }
+    }
+
     var info = theater.find('.desc .info').text().split(' - ')
 
     if (alternate) {

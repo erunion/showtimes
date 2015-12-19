@@ -110,6 +110,7 @@ api.getTheaters(function (error, theaters) {
 }
 ```
 
+* `id` is represented as `false` if no theater ID could be obtained (usually only happens on some boutique theaters).
 * `phoneNumber` and `movies` are only available on `getTheaters()`.
 * `showtimes` is only available through `getMovies()` or `getMovie()`.
 * `address` and `phoneNumber` are all optional, and not always present for every theater.
