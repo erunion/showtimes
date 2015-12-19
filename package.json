@@ -30,6 +30,9 @@
     "test": "tap test",
     "lint": "standard src/**.js test/**.js"
   },
+  "engines": {
+    "node": "4.*"
+  },
   "dependencies": {
     "cheerio": "^0.18.0",
     "iconv-lite": "^0.4.10",
