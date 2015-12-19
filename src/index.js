@@ -24,7 +24,7 @@ class showtimes {
 
     this.date = typeof options.date !== 'undefined' ? options.date : 0
     this.lang = typeof options.lang !== 'undefined' ? options.lang : 'en'
-    this.pageLimit = typeof options.pageLimit !== 'undefined' ? options.pagelimit : 999
+    this.pageLimit = typeof options.pageLimit !== 'undefined' ? options.pageLimit : 999
   }
 
   /**
