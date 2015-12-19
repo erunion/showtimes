@@ -1,6 +1,7 @@
 # Showtimes · a movie showtimes API
 [![NPM](http://img.shields.io/npm/v/showtimes.svg?style=flat)](https://www.npmjs.org/package/showtimes)
 [![Travis CI](http://img.shields.io/travis/erunion/showtimes.svg?style=flat)](https://travis-ci.org/erunion/showtimes)
+[![Coverage Status](https://coveralls.io/repos/erunion/showtimes/badge.svg?branch=master&service=github)](https://coveralls.io/github/erunion/showtimes?branch=master)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 ## Installation
