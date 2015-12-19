@@ -65,6 +65,7 @@ class showtimes {
         if (theaterData.name.length === 0) {
           return true
         }
+
         api.theaters.push(theaterData)
       })
 
@@ -116,9 +117,8 @@ class showtimes {
       $('.movie').each((i, movie) => {
         movie = $(movie)
         movieData = api._parseMovie($, movie, true)
-
-        if (movieData.name.length === 0) {
-          return true
+        if (!movieData) {
+          return
         }
 
         delete movieData.showtimes
@@ -193,12 +193,20 @@ class showtimes {
     } else {
       cloakedUrl = theater.find('.desc h2.name a').attr('href')
     }
-    // Get the Id from left links XD
+
+    // Get the ID from left links
     if (typeof cloakedUrl === 'undefined') {
       cloakedUrl = $('#left_nav .section a').attr('href')
     }
 
-    var theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : ''
+    var theaterId = false
+    if (cloakedUrl) {
+      cloakedUrl = qs.parse(url.parse(cloakedUrl))
+      if (typeof cloakedUrl.tid !== 'undefined') {
+        theaterId = cloakedUrl.tid
+      }
+    }
+
     var info = theater.find('.desc .info').text().split(' - ')
 
     if (alternate) {
@@ -214,7 +222,10 @@ class showtimes {
 
     var movies = []
     theater.find('.showtimes .movie').each((j, movie) => {
-      movies.push(api._parseMovie($, $(movie)))
+      movie = api._parseMovie($, $(movie))
+      if (movie) {
+        movies.push(movie)
+      }
     })
 
     return {
@@ -238,6 +249,14 @@ class showtimes {
   _parseMovie ($, movie, alternate, movieId) {
     if (typeof alternate === 'undefined') {
       alternate = false
+    }
+
+    var name = alternate ? movie.find('h2[itemprop=name]').text() : movie.find('.name').text()
+
+    // If the movie doesn't have a name, then there's a good chance that the theater attached to this isn't showing
+    // anything, so let's just not set a movie here.
+    if (name === '') {
+      return false
     }
 
     if (typeof movieId === 'undefined') {
@@ -336,7 +355,7 @@ class showtimes {
 
     var movieData = {
       id: movieId,
-      name: alternate ? movie.find('h2[itemprop=name]').text() : movie.find('.name').text(),
+      name: name,
       runtime: runtime,
       rating: rating,
       genre: genre,

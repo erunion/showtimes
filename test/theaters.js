@@ -66,6 +66,7 @@ test('get theaters from lat/long and get filtered movies for first theaters name
   api = new Showtimes('45.531531531531535,-122.61220863200342')
   api.getTheaters(function (err, theaters) {
     assert.equal(err, null)
+
     var query = theaters[0].name
     api.getMovies(query, function (err2, movies) {
       assert.equal(err2, null)
