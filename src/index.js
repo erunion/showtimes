@@ -24,27 +24,32 @@ class showtimes {
 
     this.date = typeof options.date !== 'undefined' ? options.date : 0
     this.lang = typeof options.lang !== 'undefined' ? options.lang : 'en'
-    this.pageLimit = typeof options.pageLimit !== 'undefined' ? options.pagelimit : 999
+    this.pageLimit = typeof options.pageLimit !== 'undefined' ? options.pageLimit : 999
   }
 
   /**
    * Parse and pull back an object of movie theaters for the currently configured location and date.
+   * @param  {string=}  query         Query string which works as a way to filter the theaters.
    * @param  {Function} cb            Callback function to run after generating an object of theaters.
    * @param  {number=}  [page=1]      Paginated page to pull theaters from. Hidden API, and is only used internally.
    * @param  {object=}  [theaters=[]] Currently generated theaters. Hidden API, and is only used internally.
    * @return void
    */
-  getTheaters (cb) {
+  getTheaters () {
     this.page = 1
     this.theaters = []
 
-    if (arguments.length > 1) {
-      this.page = arguments[1]
-      this.theaters = arguments[2]
+    var query = (typeof arguments[0] !== 'function') ? arguments[0] : null
+    var cb = (typeof arguments[0] === 'function') ? arguments[0] : arguments[1]
+    var extraIdx = (typeof arguments[0] === 'function') ? 1 : 2
+
+    if (arguments.length > extraIdx) {
+      this.page = arguments[extraIdx]
+      this.theaters = arguments[extraIdx + 1]
     }
 
     var api = this
-    this._request({}, cb, (response) => {
+    this._request({q: query}, cb, (response) => {
       if (api.lang === 'tr') {
         response = iconv.decode(response, 'latin5')
       }
@@ -56,7 +61,12 @@ class showtimes {
       }
 
       $('.theater').each((i, theater) => {
-        api.theaters.push(api._parseTheater($, $(theater)))
+        var theaterData = api._parseTheater($, $(theater))
+        if (theaterData.name.length === 0) {
+          return true
+        }
+
+        api.theaters.push(theaterData)
       })
 
       // No pages to paginate, so return the theaters back.
@@ -66,7 +76,7 @@ class showtimes {
       }
 
       // Use the hidden API of getTheaters to pass in the next page and current theaters.
-      api.getTheaters(cb, ++api.page, api.theaters)
+      api.getTheaters(query, cb, ++api.page, api.theaters)
     })
   }
 
@@ -95,22 +105,27 @@ class showtimes {
 
   /**
    * Parse and pull back an object of movies for the currently configured location and date.
+   * @param  {string=}  query        Query string which works as a way to filter the movies.
    * @param  {Function} cb           Callback function to run after generating an object of movies.
    * @param  {number=}  [page=1]     Paginated page to pull movies from. Hidden API, and is only used internally.
    * @param  {object=}  [movies=[]]  Currently generated movies. Hidden API, and is only used internally.
    * @return void
    */
-  getMovies (cb) {
+  getMovies () {
     this.page = 1
     this.movies = []
 
-    if (arguments.length > 1) {
-      this.page = arguments[1]
-      this.movies = arguments[2]
+    var query = (typeof arguments[0] !== 'function') ? arguments[0] : null
+    var cb = (typeof arguments[0] === 'function') ? arguments[0] : arguments[1]
+    var extraIdx = (typeof arguments[0] === 'function') ? 1 : 2
+
+    if (arguments.length > extraIdx) {
+      this.page = arguments[extraIdx]
+      this.movies = arguments[extraIdx + 1]
     }
 
     var api = this
-    this._request({sort: 1}, cb, (response) => {
+    this._request({sort: 1, q: query}, cb, (response) => {
       if (api.lang === 'tr') {
         response = iconv.decode(response, 'latin5')
       }
@@ -124,7 +139,10 @@ class showtimes {
       var movieData
       $('.movie').each((i, movie) => {
         movie = $(movie)
-        movieData = api._parseMovie(movie, true)
+        movieData = api._parseMovie($, movie, true)
+        if (!movieData) {
+          return
+        }
 
         delete movieData.showtimes
         movieData.theaters = []
@@ -144,7 +162,7 @@ class showtimes {
 
       // Use the hidden API of getMovies to pass in the next page and current
       // movies.
-      api.getMovies(cb, ++api.page, api.movies)
+      api.getMovies(query, cb, ++api.page, api.movies)
     })
   }
 
@@ -165,7 +183,7 @@ class showtimes {
       }
 
       var movie = $('.movie')
-      var movieData = api._parseMovie(movie, true, movieId)
+      var movieData = api._parseMovie($, movie, true, movieId)
 
       delete movieData.showtimes
       movieData.theaters = []
@@ -199,8 +217,18 @@ class showtimes {
       } else {
         cloakedUrl = theater.find('.desc h2.name a').attr('href')
       }
+      // Get the ID from left links
+      if (typeof cloakedUrl === 'undefined') {
+        cloakedUrl = $('#left_nav .section a').attr('href')
+      }
 
-      theaterId = cloakedUrl ? qs.parse(url.parse(cloakedUrl).query).tid : ''
+      theaterId = false
+      if (cloakedUrl) {
+        cloakedUrl = qs.parse(url.parse(cloakedUrl))
+        if (typeof cloakedUrl.tid !== 'undefined') {
+          theaterId = cloakedUrl.tid
+        }
+      }
     }
 
     var info = theater.find('.desc .info').text().split(' - ')
@@ -218,7 +246,10 @@ class showtimes {
 
     var movies = []
     theater.find('.showtimes .movie').each((j, movie) => {
-      movies.push(api._parseMovie($(movie)))
+      movie = api._parseMovie($, $(movie))
+      if (movie) {
+        movies.push(movie)
+      }
     })
 
     return {
@@ -239,9 +270,17 @@ class showtimes {
    *                             parsing.
    * @return {object}            Standardized response for the parsed movie.
    */
-  _parseMovie (movie, alternate, movieId) {
+  _parseMovie ($, movie, alternate, movieId) {
     if (typeof alternate === 'undefined') {
       alternate = false
+    }
+
+    var name = alternate ? movie.find('h2[itemprop=name]').text() : movie.find('.name').text()
+
+    // If the movie doesn't have a name, then there's a good chance that the theater attached to this isn't showing
+    // anything, so let's just not set a movie here.
+    if (name === '') {
+      return false
     }
 
     if (typeof movieId === 'undefined') {
@@ -250,6 +289,10 @@ class showtimes {
         cloakedUrl = movie.find('.header .desc h2[itemprop=name] a').attr('href')
       } else {
         cloakedUrl = movie.find('.name a').attr('href')
+      }
+      // Get the Id from left links XD
+      if (typeof cloakedUrl === 'undefined') {
+        cloakedUrl = $('#left_nav .section a').attr('href')
       }
 
       movieId = qs.parse(url.parse(cloakedUrl).query).mid
@@ -336,7 +379,7 @@ class showtimes {
 
     var movieData = {
       id: movieId,
-      name: alternate ? movie.find('h2[itemprop=name]').text() : movie.find('.name').text(),
+      name: name,
       runtime: runtime,
       rating: rating,
       genre: genre,
