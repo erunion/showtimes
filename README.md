@@ -89,7 +89,7 @@ api.getTheaters(function (error, theaters) {
 #### `showtimes.getMovies(callback)`
 * `callback` &mdash; Callback function to run after generating a standardized response of movies.
   * `error` &mdash; Any error messages that were found when doing a query. Null if all is good.
-  * `theaters` &mdash; Standardized response of movies.
+  * `movies` &mdash; Standardized response of movies.
 
 #### `showtimes.getMovie(movieId, callback)`
 * `movieId` &mdash; Movie ID for the movie you want to query. You can get this from a `getTheaters()` or `getMovies()` response.
