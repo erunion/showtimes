@@ -359,8 +359,8 @@ class showtimes {
       runtime: runtime,
       rating: rating,
       genre: genre,
-      imdb: this._parseTrailer(movie),
-      trailer: this._parseImdb(movie),
+      imdb: this._parseImdb(movie),
+      trailer: this._parseTrailer(movie),
       showtimes: showtimes
     }
 
