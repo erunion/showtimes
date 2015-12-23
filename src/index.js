@@ -81,6 +81,29 @@ class showtimes {
   }
 
   /**
+   * Parse and pull back a standardized object for a given movie.
+   * @param  {string}   theaterId  Theater ID for the theater you want to query. This can be obtained via getTheaters(), or
+   *                             getMovies()
+   * @param  {Function} cb       Callback function to run after generating a standardized object for this theater.
+   * @return {void}
+   */
+  getTheater (theaterId, cb) {
+    var api = this
+    this._request({tid: theaterId}, cb, (response) => {
+      var $ = cheerio.load(response)
+      if (!$('.showtimes')) {
+        cb($('#results').text())
+        return
+      }
+
+      var theater = $('.theater')
+      var theaterData = api._parseTheater($, theater, false, theaterId)
+
+      cb(null, theaterData)
+    })
+  }
+
+  /**
    * Parse and pull back an object of movies for the currently configured location and date.
    * @param  {string=}  query        Query string which works as a way to filter the movies.
    * @param  {Function} cb           Callback function to run after generating an object of movies.
@@ -182,28 +205,29 @@ class showtimes {
    *                             logic.
    * @return {object}            Standardized response for the parsed theater.
    */
-  _parseTheater ($, theater, alternate) {
+  _parseTheater ($, theater, alternate, theaterId) {
     alternate = (typeof alternate === 'undefined') ? false : alternate
 
     var api = this
 
-    var cloakedUrl
-    if (alternate) {
-      cloakedUrl = theater.find('.name a').attr('href')
-    } else {
-      cloakedUrl = theater.find('.desc h2.name a').attr('href')
-    }
+    if (typeof theaterId === 'undefined') {
+      var cloakedUrl
+      if (alternate) {
+        cloakedUrl = theater.find('.name a').attr('href')
+      } else {
+        cloakedUrl = theater.find('.desc h2.name a').attr('href')
+      }
+      // Get the ID from left links
+      if (typeof cloakedUrl === 'undefined') {
+        cloakedUrl = $('#left_nav .section a').attr('href')
+      }
 
-    // Get the ID from left links
-    if (typeof cloakedUrl === 'undefined') {
-      cloakedUrl = $('#left_nav .section a').attr('href')
-    }
-
-    var theaterId = false
-    if (cloakedUrl) {
-      cloakedUrl = qs.parse(url.parse(cloakedUrl))
-      if (typeof cloakedUrl.tid !== 'undefined') {
-        theaterId = cloakedUrl.tid
+      theaterId = false
+      if (cloakedUrl) {
+        cloakedUrl = qs.parse(url.parse(cloakedUrl))
+        if (typeof cloakedUrl.tid !== 'undefined') {
+          theaterId = cloakedUrl.tid
+        }
       }
     }
 

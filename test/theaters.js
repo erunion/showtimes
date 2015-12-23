@@ -41,6 +41,15 @@ test('get theaters from lat/long', function (assert) {
   })
 })
 
+test('get -Vogue Theatre- theater from id', function (assert) {
+  api = new Showtimes('45.531531531531535,-122.61220863200342')
+  api.getTheater('1441318e8d47fc1b', function (err, theater) {
+    assert.equal(err, null)
+    assert.ok(theater.movies[0].showtimes.length > 0)
+    assert.end()
+  })
+})
+
 test('get theaters from lat/long and later get filtered theaters for first theater name', function (assert) {
   api = new Showtimes('45.531531531531535,-122.61220863200342')
   api.getTheaters(function (err, theaters) {
@@ -75,4 +84,3 @@ test('get theaters from lat/long and get filtered movies for first theaters name
     })
   })
 })
-
