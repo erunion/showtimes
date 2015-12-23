@@ -71,16 +71,19 @@ test('no theaters available for query', function (assert) {
   })
 })
 
-test('get theaters from lat/long and get filtered movies for first theaters name and see if match, they should not.', function (assert) {
-  api = new Showtimes('45.531531531531535,-122.61220863200342')
-  api.getTheaters(function (err, theaters) {
-    assert.equal(err, null)
+test(
+  'get theaters from lat/long and get filtered movies for first theaters name and see if match, they should not.',
+  function (assert) {
+    api = new Showtimes('45.531531531531535,-122.61220863200342')
+    api.getTheaters(function (err, theaters) {
+      assert.equal(err, null)
 
-    var query = theaters[0].name
-    api.getMovies(query, function (err2, movies) {
-      assert.equal(err2, null)
-      assert.ok(movies.length === 0, 'no movies')
-      assert.end()
+      var query = theaters[0].name
+      api.getMovies(query, function (err2, movies) {
+        assert.equal(err2, null)
+        assert.ok(movies.length === 0, 'no movies')
+        assert.end()
+      })
     })
-  })
-})
+  }
+)

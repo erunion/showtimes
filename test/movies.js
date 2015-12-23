@@ -8,7 +8,7 @@ test('no movies available for a date far in the future', function (assert) {
   })
 
   api.getMovies(function (err) {
-    assert.match(err, /No showtimes were found on ([a-z]{3}) (\d).Please select a different date./i)
+    assert.match(err, /No showtimes were found on ([a-z]{3}) (\d{1,}).Please select a different date./i)
     assert.end()
   })
 })
@@ -64,15 +64,18 @@ test('no movies available for query', function (assert) {
   })
 })
 
-test('get movies from lat/long and get filtered theaters for first movie name and see if match, they should not.', function (assert) {
-  api = new Showtimes('45.531531531531535,-122.61220863200342')
-  api.getMovies(function (err, movies) {
-    assert.equal(err, null)
-    var query = movies[0].name
-    api.getTheaters(query, function (err2, theaters) {
-      assert.equal(err2, null)
-      assert.ok(theaters.length === 0, 'no theaters')
-      assert.end()
+test(
+  'get movies from lat/long and get filtered theaters for first movie name and see if match, they should not.',
+  function (assert) {
+    api = new Showtimes('45.531531531531535,-122.61220863200342')
+    api.getMovies(function (err, movies) {
+      assert.equal(err, null)
+      var query = movies[0].name
+      api.getTheaters(query, function (err2, theaters) {
+        assert.equal(err2, null)
+        assert.ok(theaters.length === 0, 'no theaters')
+        assert.end()
+      })
     })
-  })
-})
+  }
+)
