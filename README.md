@@ -86,6 +86,12 @@ api.getTheaters(function (error, theaters) {
   * `error` &mdash; Any error messages that were found when doing a query. Null if all is good.
   * `theaters` &mdash; Standardized response of theaters.
 
+#### `showtimes.getTheater(theaterId, callback)`
+* `theaterId &mdash; Theater ID for the theater you want to query. You can get this from a `getTheaters()` or `getMovies()` response.
+* `callback` &mdash; Callback function to run after generating a standardized theater response.
+  * `error` &mdash; Any error messages that were found when doing a query. Null if all is good.
+  * `theater` &mdash; Standardized response for the theater.
+
 #### `showtimes.getMovies(callback)`
 * `callback` &mdash; Callback function to run after generating a standardized response of movies.
   * `error` &mdash; Any error messages that were found when doing a query. Null if all is good.
@@ -95,7 +101,7 @@ api.getTheaters(function (error, theaters) {
 * `movieId` &mdash; Movie ID for the movie you want to query. You can get this from a `getTheaters()` or `getMovies()` response.
 * `callback` &mdash; Callback function to run after generating a standardized movie response.
   * `error` &mdash; Any error messages that were found when doing a query. Null if all is good.
-  * `theaters` &mdash; Standardized response for the movie.
+  * `movie` &mdash; Standardized response for the movie.
 
 ### Standardized Responses
 #### Theater

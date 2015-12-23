@@ -82,9 +82,9 @@ class showtimes {
 
   /**
    * Parse and pull back a standardized object for a given movie.
-   * @param  {string}   theaterId  Theater ID for the theater you want to query. This can be obtained via getTheaters(), or
-   *                             getMovies()
-   * @param  {Function} cb       Callback function to run after generating a standardized object for this theater.
+   * @param  {string}   theaterId  Theater ID for the theater you want to query. This can be obtained via getTheaters(),
+   *                               or getMovies()
+   * @param  {Function} cb         Callback function to run after generating a standardized object for this theater.
    * @return {void}
    */
   getTheater (theaterId, cb) {
