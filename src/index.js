@@ -344,7 +344,7 @@ class showtimes {
     } else {
       runtime = null
       rating = null
-      genre = info[0].trim()
+      genre = [info[0].trim()]
     }
 
     if (genre) {
