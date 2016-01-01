@@ -222,7 +222,7 @@ class showtimes {
         cloakedUrl = $('#left_nav .section a').attr('href')
       }
 
-      theaterId = false
+      theaterId = null
       if (cloakedUrl) {
         cloakedUrl = qs.parse(url.parse(cloakedUrl))
         if (typeof cloakedUrl.tid !== 'undefined') {
@@ -325,25 +325,25 @@ class showtimes {
         rating = this._removeNonAsciiCharacters(info[1].replace(/Rated/, '').trim())
         if (typeof info[2] !== 'undefined') {
           if (info[2].match(/(IMDB|Trailer)/i)) {
-            genre = false
+            genre = []
           } else {
             genre = info[2].trim().split('/')
           }
         } else {
-          genre = false
+          genre = []
         }
       } else {
-        rating = false
+        rating = null
 
         if (info[1].match(/(IMDB|Trailer)/i)) {
-          genre = false
+          genre = []
         } else {
           genre = info[1].trim().split('/')
         }
       }
     } else {
-      runtime = false
-      rating = false
+      runtime = null
+      rating = null
       genre = info[0].trim()
     }
 
@@ -441,7 +441,7 @@ class showtimes {
       return qs.parse(url.parse(cloakedUrl).query).q
     }
 
-    return false
+    return null
   }
 
   /**
@@ -456,7 +456,7 @@ class showtimes {
       return qs.parse(url.parse(cloakedUrl).query).q
     }
 
-    return false
+    return null
   }
 
   /**
