@@ -415,7 +415,6 @@ class showtimes {
   _parseShowtimes ($, thing) {
     var showtime, match
     var meridiem = false
-    var self = this
     var response = {}
 
     // Google displays showtimes like "10:00  11:20am  1:00  2:20  4:00  5:10  6:50  8:10  9:40  10:55pm". Since
@@ -424,7 +423,7 @@ class showtimes {
     // ["10:00am", "11:20am", "1:00pm", ...].
 
     var getTime = function (raw_time) {
-      var showtime = self._removeNonAsciiCharacters(raw_time).trim()
+      var showtime = this._removeNonAsciiCharacters(raw_time).trim()
 
       var match = showtime.match(/(am|pm)/)
       if (match) {
@@ -440,7 +439,7 @@ class showtimes {
     if (target.length === 0) {
       // No ticket urls available, process only showtimes
       var showtimes = thing.find('.times').text().split(' ')
-      response.showtimes = _.map(showtimes.reverse(), getTime).reverse()
+      response.showtimes = _.map(showtimes.reverse(), getTime.bind(this)).reverse()
     } else {
       // Ticket urls are available
       var showtimes = target.map(function (i, el) {
@@ -453,11 +452,11 @@ class showtimes {
       }).get()
 
       response.showtime_tickets = {}
-      response.showtimes = _.map(showtimes.reverse(), function (item) {
-        var time = getTime(item.time)
+      response.showtimes = _.map(showtimes.reverse(), (function (item) {
+        var time = getTime.bind(this)(item.time)
         response.showtime_tickets[time] = item.url;
         return time
-      }).reverse()
+      }).bind(this)).reverse()
     }
 
     return response
