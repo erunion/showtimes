@@ -5,6 +5,7 @@ var cheerio = require('cheerio')
 var qs = require('querystring')
 var url = require('url')
 var iconv = require('iconv-lite')
+var _ = require('underscore')
 
 class showtimes {
   /**
@@ -234,14 +235,17 @@ class showtimes {
     var info = theater.find('.desc .info').text().split(' - ')
 
     if (alternate) {
-      var showtimes = api._parseShowtimes($(theater))
+      var showtimes = api._parseShowtimes($, $(theater))
 
-      return {
+      var theaterData = {
         id: theaterId,
         name: theater.find('.name').text(),
         address: theater.find('.address').text(),
-        showtimes: showtimes
+        showtimes: showtimes.showtimes
       }
+      if (showtimes.showtime_tickets) theaterData.showtime_tickets = showtimes.showtime_tickets
+
+      return theaterData;
     }
 
     var movies = []
@@ -263,6 +267,8 @@ class showtimes {
 
   /**
    * Parse movie information to generate a standardized response.
+   * @param  {object}  $         Raw Cheerio object from a cheerio.load() call, used to parse movies for the given
+   *                             theater.
    * @param  {object}  movie     Cheerio object for the movie that you want to parse.
    * @param  {boolean} alternate If you are parsing a movie from a "movie sort", pass true to use alternate scraper
    *                             logic.
@@ -372,9 +378,9 @@ class showtimes {
 
     // The movie sort has a different formatting for showtimes, so if we're parsing that, handle it inside of
     // _getMovies() instead.
-    var showtimes = []
+    var showtimes = { showtimes: [] }
     if (!alternate) {
-      showtimes = this._parseShowtimes(movie)
+      showtimes = this._parseShowtimes($, movie)
     }
 
     var movieData = {
@@ -385,8 +391,9 @@ class showtimes {
       genre: genre,
       imdb: this._parseImdb(movie),
       trailer: this._parseTrailer(movie),
-      showtimes: showtimes
+      showtimes: showtimes.showtimes
     }
+    if (showtimes.showtime_tickets) movieData.showtime_tickets = showtimes.showtime_tickets
 
     if (alternate && movieId) {
       movieData.director = director
@@ -400,33 +407,60 @@ class showtimes {
   /**
    * Take in a "thing", can be either a movie or a theater object (if you are using alternate logic for a getMovies
    * lookup), and parse movie showtimes for it.
+   * @param  {object} $    Raw Cheerio object from a cheerio.load() call, used to parse movies for the given
+   *                        theater.
    * @param  {object} movie Cheerio object for either the movie of theater that you want to parse showtimes for.
    * @return {array}        Sorted and parsed array of movie showtimes.
    */
-  _parseShowtimes (thing) {
+  _parseShowtimes ($, thing) {
     var showtime, match
     var meridiem = false
+    var self = this
+    var response = {}
 
     // Google displays showtimes like "10:00  11:20am  1:00  2:20  4:00  5:10  6:50  8:10  9:40  10:55pm". Since
     // they don't always apply am/pm to times, we need to run through the showtimes in reverse and then apply the
     // previous (later) meridiem to the next (earlier) movie showtime so we end up with something like
     // ["10:00am", "11:20am", "1:00pm", ...].
-    var showtimes = thing.find('.times').text().split(' ')
-    showtimes = showtimes.reverse()
-    for (let x in showtimes) {
-      showtime = this._removeNonAsciiCharacters(showtimes[x]).trim()
 
-      match = showtime.match(/(am|pm)/)
+    var getTime = function (raw_time) {
+      var showtime = self._removeNonAsciiCharacters(raw_time).trim()
+
+      var match = showtime.match(/(am|pm)/)
       if (match) {
         meridiem = match[0]
       } else if (meridiem) {
         showtime += meridiem
       }
 
-      showtimes[x] = showtime
+      return showtime
     }
 
-    return showtimes.reverse()
+    var target = thing.find('.times a.fl')
+    if (target.length === 0) {
+      // No ticket urls available, process only showtimes
+      var showtimes = thing.find('.times').text().split(' ')
+      response.showtimes = _.map(showtimes.reverse(), getTime).reverse()
+    } else {
+      // Ticket urls are available
+      var showtimes = target.map(function (i, el) {
+        var tickets_url = url.parse($(el).attr('href'), true)
+
+        return {
+          time: $(el).text(),
+          url: tickets_url.query.q
+        }
+      }).get()
+
+      response.showtime_tickets = {}
+      response.showtimes = _.map(showtimes.reverse(), function (item) {
+        var time = getTime(item.time)
+        response.showtime_tickets[time] = item.url;
+        return time
+      }).reverse()
+    }
+
+    return response
   }
 
   /**
