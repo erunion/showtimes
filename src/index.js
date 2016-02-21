@@ -224,7 +224,7 @@ class showtimes {
 
       theaterId = false
       if (cloakedUrl) {
-        cloakedUrl = qs.parse(url.parse(cloakedUrl))
+        cloakedUrl = qs.parse(url.parse(cloakedUrl).query)
         if (typeof cloakedUrl.tid !== 'undefined') {
           theaterId = cloakedUrl.tid
         }
