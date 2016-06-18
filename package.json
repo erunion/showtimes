@@ -1,6 +1,6 @@
 {
   "name": "showtimes",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "author": {
     "name": "Jon Ursenbach",
     "email": "jon@ursenba.ch"
@@ -10,7 +10,7 @@
     "Christian Torres (https://github.com/chrux)",
     "Christopher Truman (https://github.com/jstart)",
     "CWalig (https://github.com/CWalig)",
-    "Jaisen Mathai (https://github.com/jmathai)"
+    "Jaisen Mathai (https://github.com/jmathai)",
     "Josh Goodwin (https://github.com/jclgoodwin)",
     "iuri aranda (https://github.com/iuriaranda)"
   ],
