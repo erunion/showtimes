@@ -11,6 +11,18 @@ test('get theaters from zipcode', function (assert) {
   })
 })
 
+test('get theaters attributes', function (assert) {
+  api = new Showtimes(90504)
+  api.getTheaters(function (err, theaters) {
+    assert.equal(err, null)
+    assert.ok(theaters[0].id, 'id attribute parsed from theater')
+    assert.ok(theaters[0].name, 'name attribute parsed from theater')
+    assert.ok(theaters[0].address, 'address attribute parsed from theater')
+    assert.ok(theaters[0].phoneNumber, 'phoneNumber attribute parsed from theater')
+    assert.end()
+  })
+})
+
 test('get theaters from zipcode and get movie for first movie id', function (assert) {
   api = new Showtimes(90504)
   api.getTheaters(function (err, theaters) {
