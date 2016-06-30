@@ -13,15 +13,10 @@ class showtimes {
    * @param  {object} options  Object containing available options (like: lang, date, or pageLimit).
    * @return {object}
    */
-  constructor (location, options) {
+  constructor (location, options = {}) {
     this.userAgent = 'showtimes (http://github.com/erunion/showtimes)'
     this.baseUrl = 'http://google.com/movies'
     this.location = location
-
-    // Handle available options
-    if (typeof options === 'undefined') {
-      options = {}
-    }
 
     this.date = typeof options.date !== 'undefined' ? options.date : 0
     this.lang = typeof options.lang !== 'undefined' ? options.lang : 'en'
@@ -276,11 +271,7 @@ class showtimes {
    *                             parsing.
    * @return {object}            Standardized response for the parsed movie.
    */
-  _parseMovie ($, movie, alternate, movieId) {
-    if (typeof alternate === 'undefined') {
-      alternate = false
-    }
-
+  _parseMovie ($, movie, alternate = false, movieId) {
     var name = alternate ? movie.find('h2[itemprop=name]').text() : movie.find('.name').text()
 
     // If the movie doesn't have a name, then there's a good chance that the theater attached to this isn't showing
