@@ -30,20 +30,20 @@
   },
   "main": "src/index.js",
   "scripts": {
-    "test": "tap test",
-    "lint": "standard src/**.js test/**.js"
+    "test": "tap tests/",
+    "lint": "standard src/**.js tests/**.js"
   },
   "engines": {
-    "node": "4.*"
+    "node": ">= 4.*"
   },
   "dependencies": {
-    "cheerio": "^0.18.0",
+    "cheerio": "^0.22.0",
     "iconv-lite": "^0.4.10",
     "request": "^2.51.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "moment": "^2.10.6",
-    "tap": "2.3.*"
+    "moment": "^2.15.2",
+    "tap": "^8.0.0"
   }
 }
