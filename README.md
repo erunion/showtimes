@@ -4,16 +4,16 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 ## Installation
-```
+```bash
 npm install showtimes --save
 ```
 
 ## Usage
-```
-var Showtimes = require('showtimes');
-var api = new Showtimes(10001, {});
+```javascript
+const Showtimes = require('showtimes');
+const api = new Showtimes(10001, {});
 
-api.getTheaters(function (error, theaters) {
+api.getTheaters((error, theaters) => {
   if (error) {
     throw error
   }
@@ -22,7 +22,8 @@ api.getTheaters(function (error, theaters) {
 });
 ```
 
-```
+### Result
+```javascript
 [ { id: '4c9f211a0800ff36',
     name: 'AMC Loews 34th Street 14',
     address: '312 W. 34th St., New York, NY',
@@ -105,7 +106,7 @@ api.getTheaters(function (error, theaters) {
 
 ### Standardized Responses
 #### Theater
-```
+```javascript
 {
   id: '4c9f211a0800ff36',
   name: 'AMC Loews 34th Street 14',
@@ -122,7 +123,7 @@ api.getTheaters(function (error, theaters) {
 * `address` and `phoneNumber` are all optional, and not always present for every theater.
 
 #### Movie
-```
+```javascript
 {
   id: 'cfbfd1f634e7638a',
   name: 'Star Wars: The Force Awakens 3D',
