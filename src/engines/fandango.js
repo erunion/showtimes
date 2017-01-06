@@ -1,55 +1,37 @@
 'use strict'
 
-//var request = require('request')
-//var cheerio = require('cheerio')
+var engine = require('../engine.js');
+var slugify = require('slugify')
+var slug = require('slug');
+var request = require('request')
+var cheerio = require('cheerio')
 //var qs = require('querystring')
 //var url = require('url')
 //var iconv = require('iconv-lite')
 //var _ = require('underscore')
-//var sprintf = require('sprintf-js').sprintf;
+var sprintf = require('sprintf-js').sprintf;
 
-class showtimes {
+class fandango extends engine {
   /**
    * @constructor
    * @param  {string} location Location that you want to pull movie showtimes for.
-   * @param  {object} options  Object containing available options (like: `engine`, `lang`, `date`, or `pageLimit`).
+   * @param  {object} options  Object containing available options (like: lang, date, or pageLimit).
    * @return {object}
    */
   constructor (location, options) {
-    this.userAgent = 'showtimes [v3] (http://github.com/erunion/showtimes)'
-    this.defaultEngine = 'fandango'
+    super('fandango', location, options);
 
-    // Handle available options
-    if (typeof options === 'undefined') {
-      options = {}
-    }
+    this.location = slug(this.location, {
+      replacement: '_',
+      lower: true
+    })
 
-    this.date = typeof options.date !== 'undefined' ? options.date : null
-    //this.lang = typeof options.lang  == 'undefined' ? options.lang : 'en'
-    //this.pageLimit = typeof options.pageLimit !== 'undefined' ? options.pageLimit : 999
+    this.url = sprintf('http://www.fandango.com/%s_movietimes', this.location);
 
-    if (typeof options.engine !== 'undefined') {
-        try {
-          this.engine = require('./engines/' + options.engine);
-        } catch (err) {
-          // Give back a prettier error message when the user is trying to use an engine that doesn't exist.
-          if (err.message.indexOf('Cannot find module ') != -1) {
-            console.log('`' + options.engine + '` is an invalid engine. Please check the showtimes docs for available engines.')
-            console.log('https://github.com/erunion/showtimes');
-          } else {
-            console.log(err);
-          }
-
-          process.exit();
-        }
-    } else {
-        this.engine = require('./engines/' + this.defaultEngine);
-    }
-
-    this.engine = new this.engine(location, {
-      userAgent: this.userAgent,
-      date: this.date
-    });
+    //http://www.fandango.com/11249_movietimes?date=11/11/2016
+    /*if (this.date !== null) {
+      this.date =
+    }*/
   }
 
   /**
@@ -133,11 +115,99 @@ class showtimes {
   /**
    * Parse and pull back an object of movies for the currently configured location and date.
    *
-   * @param  {Function} callback  Callback function to run after generating an object of movies.
+   * @param  {Function} cb           Callback function to run after generating an object of movies.
+   * @param  {number=}  [page=1]     Paginated page to pull movies from. Only used internally.
+   * @param  {object=}  [movies=[]]  Currently generated movies. Only used internally.
    * @return void
    */
-  getMovies (callback) {
-    this.engine.getMovies(callback);
+  getMovies (cb) {
+    this.page = 1
+    this.movies = {}
+
+    //var query = (typeof arguments[0] !== 'function') ? arguments[0] : null
+    //var cb = (typeof arguments[0] === 'function') ? arguments[0] : arguments[1]
+    //var extraIdx = (typeof arguments[0] === 'function') ? 1 : 2
+
+    if (arguments.length > 1) {
+      this.page = arguments[1]
+      this.movies = arguments[2]
+    }
+
+    var api = this
+    this._request(cb, {}, (response) => {
+      var $ = cheerio.load(response);
+      if ($('.showtimes-module span[itemscope]').length === 0) {
+        cb('No movies were found in this location.');
+        return
+      }
+
+      // Build up a list of movies
+      var movieId = null;
+      var movieName = null;
+      var movie = null
+      var movieData = {}
+      $('.showtimes-module span[itemtype="http://schema.org/Movie"]').each((i, current) => {
+        current = $(current)
+
+        movieName = current.find('meta[itemprop="name"]').attr('content')
+        movieId = slug(movieName, {lower: true})
+        if (typeof api.movies[movieId] !== 'undefined') {
+          return;
+        }
+
+        movie = super._createMovie(movieId, movieName)
+        movie.setPoster(current.find('meta[itemprop="image"]').attr('content'));
+        movie.setDescription(current.find('meta[itemprop="description"]').attr('content'));
+        movie.setRuntime(current.find('meta[itemprop="duration"]').attr('content'))
+        movie.setRating(current.find('meta[itemprop="contentRating"]').attr('content'))
+        movie.setGenres(current.find('meta[itemprop="genre"]').attr('content'))
+
+        api.movies[movieId] = movie
+      })
+
+      // Parse theaters for showtimes
+
+      // Paginate
+
+
+      /*if (api.lang === 'tr') {
+        response = iconv.decode(response, 'latin5')
+      }
+
+      var $ = cheerio.load(response)
+      if ($('.movie').length === 0) {
+        cb($('#results').text())
+        return
+      }
+
+      var movieData
+      $('.movie').each((i, movie) => {
+        movie = $(movie)
+        movieData = api._parseMovie($, movie, true)
+        if (!movieData) {
+          return
+        }
+
+        delete movieData.showtimes
+        movieData.theaters = []
+
+        movie.find('.showtimes .theater').each((j, theater) => {
+          movieData.theaters.push(api._parseTheater($, $(theater), true))
+        })
+
+        api.movies.push(movieData)
+      })
+
+      // No pages to paginate, so return the movies back.
+      if ($('#navbar td a:contains("Next")').length === 0 || api.page === api.pageLimit) {
+        cb(null, api.movies)
+        return
+      }
+
+      // Use the hidden API of getMovies to pass in the next page and current
+      // movies.
+      api.getMovies(query, cb, ++api.page, api.movies)*/
+    })
   }
 
   /**
@@ -495,6 +565,51 @@ class showtimes {
 
     return thing.replace(/[^\x00-\x7F]/g, '')
   }*/
+
+  /**
+   * Make a request to the API endpoint.
+   *
+   * @param  {object}   params  Parameters to send along in the query string.
+   * @param  {Function} cb      Callback function to run for the API after processing a request.
+   * @param  {Function} handler Callback function to handle a request and generate an object of data.
+   * @return {void}
+   */
+  _request (params, cb, handler) {
+    var query = {
+      //hl: this.lang,
+      //near: this.location,
+      //date: this.date,
+      //start: ((this.page - 1) * 10)
+    }
+
+    for (let i in params) {
+      query[i] = params[i]
+    }
+
+    var options = {
+      url: this.url,
+      qs: query,
+      headers: {
+        'User-Agent': this.userAgent,
+        'gzip': true
+      },
+      encoding: 'binary'
+    }
+
+    request(options, (error, response, body) => {
+      if (error || response.statusCode !== 200) {
+        if (error === null) {
+          cb('An unknown error occured when fetching data from Fandango.');
+        } else {
+          cb(error)
+        }
+
+        return
+      }
+
+      handler(body)
+    })
+  }
 }
 
-module.exports = showtimes
+module.exports = fandango
