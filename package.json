@@ -1,10 +1,7 @@
 {
   "name": "showtimes",
   "version": "2.1.2",
-  "author": {
-    "name": "Jon Ursenbach",
-    "email": "jon@ursenba.ch"
-  },
+  "author": "Jon Ursenbach <jon@ursenba.ch>",
   "contributors": [
     "Berkay Sargın (https://github.com/berkaey)",
     "Christian Torres (https://github.com/chrux)",
@@ -30,20 +27,23 @@
   },
   "main": "src/index.js",
   "scripts": {
-    "test": "tap test",
-    "lint": "standard src/**.js test/**.js"
+    "test": "tap tests/",
+    "lint": "standard src/**.js tests/**.js"
   },
   "engines": {
-    "node": "4.*"
+    "node": ">= 4.*"
   },
   "dependencies": {
-    "cheerio": "^0.18.0",
-    "iconv-lite": "^0.4.10",
+    "cheerio": "^0.22.0",
+    "iso8601-duration": "^1.0.6",
     "request": "^2.51.0",
+    "slug": "^0.9.1",
+    "slugify": "^1.0.2",
+    "sprintf-js": "^1.0.3",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "moment": "^2.10.6",
-    "tap": "2.3.*"
+    "moment": "^2.15.2",
+    "tap": "^8.0.0"
   }
 }
